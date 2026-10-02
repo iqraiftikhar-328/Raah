@@ -1,16 +1,7 @@
 [theme]
 base="light"
-primaryColor="#50394c"
-backgroundColor="#f4e1d2"
-secondaryBackgroundColor="#ffffff"
-textColor="#50394c"
+primaryColor="#618685"
+backgroundColor="#d5f4e6"
+secondaryBackgroundColor="#fefbd8"
+textColor="#618685"
 font="sans serif"
-
-[server]
-headless = true
-
-[theme.sidebar]
-backgroundColor="#50394c"
-secondaryBackgroundColor="#f4e1d2"
-textColor="#f4e1d2"
-primaryColor="#ffef96"
