@@ -1,0 +1,17 @@
+university: International Islamic University Islamabad
+city: Islamabad
+field: Psychology
+year: 2026
+source: https://admission.iiu.edu.pk/programes
+
+## Eligibility
+IIUI lists BS Psychology under the Faculty of Social Sciences. The university's undergraduate programme information uses HSSC/equivalent with minimum 50% marks for the relevant BS social-science programmes; applicants should verify any programme-specific conditions in the current portal.
+
+## Fees
+For Pakistani students, IIUI's FY 2026-27 fee structure lists BS Psychology at PKR 55,370 per semester plus PKR 16,500 one-time charges, total PKR 71,870.
+
+## Deadlines
+IIUI's general admission schedule states that Fall applications are normally submitted from the first week of June through 15 July, with the semester commencing in the first working day of September. For Fall 2026, IIUI's official site also published programme-specific updates and test schedules, so applicants should verify the exact programme phase/date before applying.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

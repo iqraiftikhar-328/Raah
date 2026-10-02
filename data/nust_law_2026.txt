@@ -1,0 +1,17 @@
+university: NUST
+city: Islamabad
+field: Law
+year: 2026
+source: https://nust.edu.pk/admissions/undergraduates/list-of-ug-programmes-and-institutions
+
+## Eligibility
+NUST lists LLB under NUST Law School. The academic-qualification page lists LLB as available to several FSc/FA/A-Level subject combinations. The official 2026 portal states SAT minimum 550 in each subject or ACT Maths, English and Reading minimum 25 for Business Studies/Social Sciences and LLB on the ACT/SAT route.
+
+## Fees
+For national students, 2026-27 tuition for Social Sciences & Business Studies is PKR 302,950 per semester, plus PKR 5,000 miscellaneous charges. One-time admission processing fee is PKR 35,000 and refundable security deposit is PKR 10,000.
+
+## Deadlines
+For the 2026 cycle, the official UG portal listed 25 July 2026 as the ACT/SAT application-form deadline. NET-2026 Series-4 had an 18 June 2026 application deadline. The 2026 admission cycle is now in its selection-list stage; students should verify the next cycle on the official portal.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

@@ -1,0 +1,17 @@
+university: FAST-NUCES
+city: Islamabad
+field: Media
+year: 2026
+source: https://www.nu.edu.pk/Admissions/ProgramOffered
+
+## Eligibility
+Not offered at FAST-NUCES Islamabad in the official undergraduate programme list reviewed for 2026. Do not treat this file as evidence that FAST offers an undergraduate Media degree.
+
+## Fees
+Not applicable because an undergraduate Media programme is not listed for FAST-NUCES Islamabad in the official programme list reviewed.
+
+## Deadlines
+For the 2026 undergraduate cycle, FAST listed 20 May–30 June 2026 for application submission, with admission tests from 29 June–10 July 2026 and merit-list announcement on 22 July 2026.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

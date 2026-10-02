@@ -1,0 +1,17 @@
+university: COMSATS University Islamabad
+city: Islamabad
+field: Law
+year: 2026
+source: https://islamabad.comsats.edu.pk/Undergraduate.aspx
+
+## Eligibility
+Not offered at CUI Islamabad in the official undergraduate programme list reviewed for 2026.
+
+## Fees
+Not applicable because an undergraduate Law programme is not listed for CUI Islamabad.
+
+## Deadlines
+For Fall 2026 at CUI Islamabad, admissions opened 31 May 2026 and the official application deadline was 8 July 2026. Classes were scheduled to begin 7 September 2026.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

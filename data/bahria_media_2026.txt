@@ -1,0 +1,17 @@
+university: Bahria University
+city: Islamabad
+field: Media
+year: 2026
+source: https://www.bahria.edu.pk/Home/AdmissionRoadmap?campus=islamabad&programType=UnderGraduate
+
+## Eligibility
+Bahria University Islamabad E-8 lists BS Media & Communication Studies as a four-year undergraduate programme. Applicants should verify the current programme-specific admission requirements in the official roadmap.
+
+## Fees
+For Fall 2026/Spring 2027, Bahria lists BS Media Studies at PKR 7,608 per credit hour; 17 first-semester credit hours give tuition of PKR 129,336 plus PKR 11,000 miscellaneous charges, total PKR 140,336 per semester. One-time admission fee is PKR 33,000 and refundable caution money is PKR 25,000.
+
+## Deadlines
+The Bahria undergraduate admission roadmap is the official source for current Islamabad admission information. A single university-wide Fall 2026 undergraduate application deadline was not clearly exposed in the retrieved official roadmap, so this field should be verified from the current 'Important Dates' section before use.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

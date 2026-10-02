@@ -1,0 +1,17 @@
+university: Air University
+city: Islamabad
+field: Psychology
+year: 2026
+source: https://webdata.au.edu.pk/Pages/Admission/fees_financial.aspx
+
+## Eligibility
+Air University lists BS Psychology. Its eligibility information includes Psychology among programmes open to applicants with the relevant HSSC/A-Level backgrounds.
+
+## Fees
+For Fall 2026, Air University lists BS Psychology at PKR 5,900 per credit hour and 18 first-semester credit hours, giving tuition of PKR 106,200. Allied charges include PKR 2,500 application processing, PKR 20,000 admission fee, PKR 5,000 endowment fund, PKR 6,000 miscellaneous charges, and PKR 10,000 refundable security deposit.
+
+## Deadlines
+For Fall 2026, Air University listed 2 July 2026 as the application deadline for Phase-II, III & IV undergraduate programmes. The official schedule also lists Islamabad CBT dates in June/July 2026.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

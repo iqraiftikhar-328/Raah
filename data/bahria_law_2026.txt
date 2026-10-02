@@ -1,0 +1,17 @@
+university: Bahria University
+city: Islamabad
+field: Law
+year: 2026
+source: https://www.bahria.edu.pk/Home/AdmissionRoadmap?campus=islamabad&programType=UnderGraduate
+
+## Eligibility
+Bahria University Islamabad E-8 lists Bachelor of Laws as a four-year undergraduate programme. Applicants should verify the current BUET/admission-test and Pakistan Bar Council/HEC requirements in the official admission material.
+
+## Fees
+For Fall 2026/Spring 2027, Bahria lists LLB at PKR 11,680 per credit hour; 17 first-semester credit hours give tuition of PKR 198,560 plus PKR 15,000 miscellaneous charges, total PKR 213,560 per semester. One-time admission fee is PKR 33,000 and refundable caution money is PKR 25,000. The fee page notes the programme is subject to NOC of Pakistan Bar Council/HEC.
+
+## Deadlines
+The Bahria undergraduate admission roadmap is the official source for current Islamabad admission information. A single university-wide Fall 2026 undergraduate application deadline was not clearly exposed in the retrieved official roadmap, so this field should be verified from the current 'Important Dates' section before use.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

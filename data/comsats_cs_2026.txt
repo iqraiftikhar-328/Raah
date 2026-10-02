@@ -1,0 +1,17 @@
+university: COMSATS University Islamabad
+city: Islamabad
+field: Cs
+year: 2026
+source: https://islamabad.comsats.edu.pk/Undergraduate.aspx
+
+## Eligibility
+CUI Islamabad lists BS Computer Science. The official CUI undergraduate eligibility information uses a minimum of 50% in the relevant Intermediate/equivalent qualification for BS Computer Science, with the required NTS/NAT or CUI admission-test route as applicable.
+
+## Fees
+For Fall 2026 at CUI Islamabad, the official fee page lists Computer Science at PKR 153,500 tuition plus PKR 7,000 registration, for PKR 160,500 per semester. A one-time admission fee of PKR 22,000 is charged to new entrants.
+
+## Deadlines
+For Fall 2026 at CUI Islamabad, admissions opened 31 May 2026 and the official application deadline was 8 July 2026. Classes were scheduled to begin 7 September 2026.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.

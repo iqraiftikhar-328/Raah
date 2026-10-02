@@ -1,0 +1,17 @@
+university: FAST-NUCES
+city: Islamabad
+field: Business
+year: 2026
+source: https://www.nu.edu.pk/Admissions/ProgramOffered
+
+## Eligibility
+For BBA / BS Accounting & Finance / BS Business Analytics / BS Financial Technology, FAST requires at least 60% in SSC and 50% in HSSC. Applicants may use the FAST-NUCES test, SAT, or specified NTS NAT routes.
+
+## Fees
+FAST states a tuition rate of PKR 12,000 per credit hour from Fall 2026. FAST does not publish a single fixed semester tuition amount because semester cost depends on registered credit hours; additional admission, security and Student Activity Fund charges also apply.
+
+## Deadlines
+For the 2026 undergraduate cycle, FAST listed 20 May–30 June 2026 for application submission, with admission tests from 29 June–10 July 2026 and merit-list announcement on 22 July 2026.
+
+## Data note
+This file is intended for the Raah RAG dataset. Information was checked against official university sources available in 2026. If a programme is marked as not offered, do not generate admissions advice for that field at that university. Fees and dates can change; students should verify the current official page before making decisions.
