@@ -21,7 +21,7 @@ def secret(name, default=None):
     except Exception:
         return os.getenv(name, default)
 
-MODEL = secret("GROQ_MODEL", "llama-3.3-70b-versatile")  # check console.groq.com for current model names
+MODEL = secret("GROQ_MODEL", "openai/gpt-oss-120b")  # check console.groq.com for current model names
 MIN_SCORE = 0.25  # below this, we say "not found" (tune using your test questions)
 NOT_FOUND = "I could not find this in the available knowledge base. Please check the official university website."
 SYSTEM = ("You are Raah, a career and admissions assistant. Answer ONLY using the provided context. "
