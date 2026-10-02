@@ -18,16 +18,16 @@ st.markdown("""
 
     /* --- HERO BANNER --- */
     .hero {
-        background: linear-gradient(135deg, #667292 0%, #8d9db6 100%);
+        background: linear-gradient(135deg, #622569 0%, #5b9aa0 100%);
         padding: 3rem 2rem;
         border-radius: 16px;
         text-align: center;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(102, 114, 146, 0.3);
+        box-shadow: 0 10px 15px -3px rgba(98, 37, 105, 0.3);
     }
     .hero-badge {
-        background-color: #bccad6;
-        color: #667292 !important;
+        background-color: #b8a9c9;
+        color: #622569 !important;
         padding: 6px 14px;
         border-radius: 20px;
         font-size: 0.8rem;
@@ -48,26 +48,26 @@ st.markdown("""
         max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
-        color: #f1e3dd !important;
+        color: #d6d4e0 !important;
     }
 
     /* --- WARNING BANNER --- */
     .warn {
-        background: #bccad6;
-        border-left: 6px solid #667292;
-        color: #667292 !important;
+        background: #b8a9c9;
+        border-left: 6px solid #622569;
+        color: #622569 !important;
         padding: 1rem 1.5rem;
         border-radius: 8px;
         font-size: 0.9rem;
         font-weight: 500;
         margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(102, 114, 146, 0.1);
+        box-shadow: 0 2px 4px rgba(98, 37, 105, 0.1);
     }
-    .warn * { color: #667292 !important; }
+    .warn * { color: #622569 !important; }
 
-    /* --- SIDEBAR (Force Slate Blue with Beige Text) --- */
+    /* --- SIDEBAR (Force Deep Purple with Lavender Text) --- */
     [data-testid="stSidebar"] {
-        background-color: #667292 !important;
+        background-color: #622569 !important;
     }
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
@@ -76,43 +76,43 @@ st.markdown("""
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] span,
     [data-testid="stSidebar"] .stCaption {
-        color: #f1e3dd !important;
+        color: #d6d4e0 !important;
     }
-    /* Sidebar dropdowns - Light Blue background, Slate text */
+    /* Sidebar dropdowns - Lavender background, Purple text */
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {
-        background-color: #bccad6 !important;
-        color: #667292 !important;
-        border: 1px solid #8d9db6 !important;
+        background-color: #b8a9c9 !important;
+        color: #622569 !important;
+        border: 1px solid #5b9aa0 !important;
     }
     [data-testid="stSidebar"] div[data-baseweb="select"] * {
-        color: #667292 !important;
+        color: #622569 !important;
     }
 
     /* --- LOGO AREA --- */
     .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
     .logo-icon {
-        background-color: #bccad6;
-        color: #667292;
+        background-color: #b8a9c9;
+        color: #622569;
         width: 45px; height: 45px; border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
         font-size: 24px;
     }
-    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #f1e3dd !important; }
-    .logo-text p { margin: 0; font-size: 0.8rem; color: #bccad6 !important; }
+    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #d6d4e0 !important; }
+    .logo-text p { margin: 0; font-size: 0.8rem; color: #b8a9c9 !important; }
 
     /* --- SOURCE CARDS --- */
     .src {
-        border-left: 5px solid #8d9db6;
+        border-left: 5px solid #5b9aa0;
         background: #ffffff;
         padding: 14px 18px;
         border-radius: 8px;
         margin: 10px 0;
         font-size: 0.9rem;
-        border: 1px solid #8d9db6;
-        color: #667292;
+        border: 1px solid #b8a9c9;
+        color: #622569;
     }
-    .src b { color: #667292 !important; }
-    .src a { color: #667292 !important; text-decoration: underline; font-weight: 600; }
+    .src b { color: #622569 !important; }
+    .src a { color: #5b9aa0 !important; text-decoration: underline; font-weight: 600; }
 </style>
 """, unsafe_allow_html=True)
 
