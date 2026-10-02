@@ -14,7 +14,9 @@ st.markdown("""
     /* Import Google Font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    /* --- GLOBAL FORCE LIGHT MODE + PLUM TEXT --- */
+    /* ================================================================= */
+    /* THE NUCLEAR OPTION: Force Light Mode & Plum Text Everywhere       */
+    /* ================================================================= */
     html, body, [class*="css"], .stApp, .stMarkdown, p, h1, h2, h3, h4, h5, h6, label, span, div {
         font-family: 'Inter', sans-serif;
         color: #50394c !important; /* Force all text to Deep Plum */
@@ -30,7 +32,7 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
-    /* --- HERO SECTION (Keep its own colors) --- */
+    /* --- HERO SECTION --- */
     .hero {
         background: linear-gradient(135deg, #50394c 0%, #b2b2b2 100%);
         padding: 3rem 2rem;
@@ -78,23 +80,28 @@ st.markdown("""
         margin-bottom: 2rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+    .warn * { color: #50394c !important; }
 
-    /* --- SIDEBAR (Force Dark Plum Background) --- */
+    /* --- SIDEBAR (Force Dark Plum Background & Peach Text) --- */
     [data-testid="stSidebar"] {
         background-color: #50394c !important;
         border-right: 1px solid #b2b2b2;
         padding-top: 2rem;
     }
-    [data-testid="stSidebar"] * {
+    /* Force all sidebar text to be light peach */
+    [data-testid="stSidebar"] *, [data-testid="stSidebar"] p, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] label, [data-testid="stSidebar"] span {
         color: #f4e1d2 !important;
     }
-    [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
+    /* Force Dropdowns to be Peach with Plum text */
+    [data-testid="stSidebar"] div[data-baseweb="select"] {
         background-color: #f4e1d2 !important;
-        color: #50394c !important;
+        border-radius: 8px;
     }
-    [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] * {
+    [data-testid="stSidebar"] div[data-baseweb="select"] * {
         color: #50394c !important;
+        background-color: transparent !important;
     }
+    
     .logo-area {
         display: flex;
         align-items: center;
@@ -116,8 +123,8 @@ st.markdown("""
     .logo-text h2 { margin: 0; font-size: 1.4rem; color: #ffef96 !important; }
     .logo-text p { margin: 0; font-size: 0.8rem; color: #b2b2b2 !important; }
 
-    /* --- INPUTS (Force White Background) --- */
-    .stTextInput > div > div > input {
+    /* --- MAIN INPUTS (Force White Background) --- */
+    .stTextInput > div > div > input, .stNumberInput > div > div > input {
         border-radius: 10px;
         border: 2px solid #b2b2b2;
         padding: 14px 18px;
@@ -126,20 +133,12 @@ st.markdown("""
         color: #50394c !important;
         transition: all 0.3s ease;
     }
-    .stTextInput > div > div > input::placeholder {
+    .stTextInput > div > div > input::placeholder, .stNumberInput > div > div > input::placeholder {
         color: #b2b2b2 !important;
     }
-    .stTextInput > div > div > input:focus {
+    .stTextInput > div > div > input:focus, .stNumberInput > div > div > input:focus {
         border-color: #50394c;
         box-shadow: 0 0 0 3px rgba(80, 57, 76, 0.2);
-    }
-    
-    /* Number Input */
-    .stNumberInput > div > div > input {
-        background-color: #ffffff !important;
-        color: #50394c !important;
-        border: 2px solid #b2b2b2;
-        border-radius: 10px;
     }
 
     /* --- BUTTONS --- */
@@ -158,6 +157,8 @@ st.markdown("""
         border-color: #50394c;
         color: #50394c !important;
     }
+    /* Force text inside buttons to be visible */
+    .stButton > button * { color: inherit !important; }
 
     .stButton > button[kind="primary"] {
         background-color: #50394c !important;
@@ -196,17 +197,18 @@ st.markdown("""
         transition: all 0.2s ease;
         margin: 0;
     }
+    .stTabs [data-baseweb="tab"] * { color: #50394c !important; }
+    
     .stTabs [data-baseweb="tab"]:hover {
         background-color: #ffef96 !important;
         border-color: #50394c;
-        color: #50394c !important;
     }
     .stTabs [aria-selected="true"] {
         background-color: #50394c !important;
-        color: #f4e1d2 !important;
         border-color: #50394c !important;
         box-shadow: 0 4px 6px rgba(80, 57, 76, 0.3);
     }
+    .stTabs [aria-selected="true"] * { color: #f4e1d2 !important; }
 
     /* --- SOURCE CARDS --- */
     .src {
@@ -220,8 +222,8 @@ st.markdown("""
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         border: 1px solid #b2b2b2;
     }
-    .src a { color: #50394c; text-decoration: underline; font-weight: 600;}
-    .src a:hover { color: #1d4ed8; }
+    .src * { color: #50394c !important; }
+    .src a { color: #1d4ed8 !important; text-decoration: underline; font-weight: 600;}
 
     /* --- SHORTLIST CARDS --- */
     .uni-card {
@@ -232,9 +234,9 @@ st.markdown("""
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         margin-bottom: 1rem;
         border-top: 5px solid #50394c;
-        color: #50394c !important;
     }
-    .uni-card h3 { margin-top: 0; color: #50394c !important; font-size: 1.3rem; }
+    .uni-card * { color: #50394c !important; }
+    
     .uni-tag {
         display: inline-block;
         background: #f4e1d2 !important;
@@ -257,8 +259,8 @@ st.markdown("""
         border: 2px dashed #b2b2b2; 
         margin-top: 1rem;
     }
-    .empty-state h3 { color: #50394c !important; margin-bottom: 0.5rem; }
-    .empty-state p { color: #b2b2b2 !important; font-size: 1rem; }
+    .empty-state * { color: #50394c !important; }
+    .empty-state p { color: #b2b2b2 !important; }
 </style>
 """, unsafe_allow_html=True)
 
