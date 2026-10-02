@@ -9,158 +9,201 @@ from groq import Groq
 # -----------------------------------------------------------------------------
 st.set_page_config(page_title="Raah", page_icon="🧭", layout="wide")
 
+# Custom CSS using the requested color palette
 st.markdown("""
 <style>
     /* Import Google Font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    /* Global Font & Background */
+    /* Global Font */
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
     }
-    .stApp {
-        background-color: #F8FAFC;
-    }
 
-    /* Hide default Streamlit elements */
+    /* Hide default Streamlit elements for a cleaner app feel */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
     /* --- HERO SECTION --- */
     .hero {
-        background: linear-gradient(135deg, #0f766e 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #50394c 0%, #b2b2b2 100%);
         padding: 3rem 2rem;
         border-radius: 16px;
-        color: white;
+        color: #f4e1d2;
         text-align: center;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 15px -3px rgba(80, 57, 76, 0.3);
     }
     .hero-badge {
-        background-color: rgba(255, 255, 255, 0.2);
-        padding: 6px 12px;
+        background-color: #ffef96;
+        color: #50394c;
+        padding: 6px 14px;
         border-radius: 20px;
         font-size: 0.8rem;
-        font-weight: 600;
+        font-weight: 700;
         display: inline-block;
         margin-bottom: 1rem;
         letter-spacing: 0.5px;
+        text-transform: uppercase;
     }
     .hero h1 {
         font-size: 2.8rem;
         font-weight: 700;
         margin: 0 0 1rem 0;
-        color: white;
+        color: #ffffff;
     }
     .hero p {
         font-size: 1.1rem;
         max-width: 600px;
         margin: 0 auto;
-        opacity: 0.9;
+        opacity: 0.95;
         line-height: 1.6;
     }
 
     /* --- WARNING BANNER --- */
     .warn {
-        background: #FFFBEB;
-        border-left: 4px solid #F59E0B;
-        color: #78350F;
-        padding: 1rem;
+        background: #ffef96;
+        border-left: 6px solid #50394c;
+        color: #50394c;
+        padding: 1rem 1.5rem;
         border-radius: 8px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        font-weight: 500;
         margin-bottom: 2rem;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     /* --- SIDEBAR --- */
     [data-testid="stSidebar"] {
-        background-color: #FFFFFF;
-        border-right: 1px solid #E2E8F0;
+        background-color: #50394c;
+        border-right: 1px solid #b2b2b2;
         padding-top: 2rem;
     }
+    /* Force sidebar text to be light peach so it's visible on plum background */
+    [data-testid="stSidebar"] * {
+        color: #f4e1d2 !important;
+    }
+    /* Logo Area */
     .logo-area {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         margin-bottom: 2rem;
     }
     .logo-icon {
-        background-color: #0f766e;
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
+        background-color: #ffef96;
+        color: #50394c;
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 24px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     }
-    .logo-text h2 { margin: 0; font-size: 1.2rem; color: #1E293B; }
-    .logo-text p { margin: 0; font-size: 0.8rem; color: #64748B; }
+    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #ffef96 !important; }
+    .logo-text p { margin: 0; font-size: 0.8rem; color: #b2b2b2 !important; }
 
     /* --- INPUTS & BUTTONS --- */
+    /* Target the text input box specifically */
     .stTextInput > div > div > input {
-        border-radius: 8px;
-        border: 1px solid #CBD5E1;
-        padding: 12px 16px;
+        border-radius: 10px;
+        border: 2px solid #b2b2b2;
+        padding: 14px 18px;
         font-size: 1rem;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        background-color: #ffffff;
+        color: #50394c;
+        transition: all 0.3s ease;
     }
     .stTextInput > div > div > input:focus {
-        border-color: #3B82F6;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        border-color: #50394c;
+        box-shadow: 0 0 0 3px rgba(80, 57, 76, 0.2);
     }
+    
+    /* Standard Buttons (Chips) */
     .stButton > button {
-        border-radius: 8px;
+        border-radius: 10px;
         font-weight: 600;
-        padding: 10px 24px;
-        transition: all 0.2s;
+        padding: 10px 20px;
+        background-color: #ffffff;
+        color: #50394c;
+        border: 1px solid #b2b2b2;
+        transition: all 0.2s ease;
+        width: 100%;
     }
+    .stButton > button:hover {
+        background-color: #ffef96;
+        border-color: #50394c;
+        color: #50394c;
+    }
+
+    /* Primary Buttons (Ask Raah / Suggest Options) */
     .stButton > button[kind="primary"] {
-        background-color: #1d4ed8;
+        background-color: #50394c;
+        color: #f4e1d2;
         border: none;
+        padding: 12px 30px;
+        font-size: 1.05rem;
     }
     .stButton > button[kind="primary"]:hover {
-        background-color: #1e40af;
-        box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.3);
+        background-color: #ffef96;
+        color: #50394c;
+        box-shadow: 0 6px 12px rgba(80, 57, 76, 0.3);
+        transform: translateY(-1px);
     }
 
     /* --- SOURCE CARDS --- */
     .src {
-        border-left: 4px solid #0f766e;
-        background: #F8FAFC;
-        padding: 12px 16px;
-        border-radius: 6px;
-        margin: 8px 0;
-        color: #0f172a;
-        font-size: 0.85rem;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        border-left: 5px solid #50394c;
+        background: #ffffff;
+        padding: 14px 18px;
+        border-radius: 8px;
+        margin: 10px 0;
+        color: #50394c;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border: 1px solid #b2b2b2;
     }
-    .src a { color: #1d4ed8; text-decoration: none; font-weight: 500;}
-    .src a:hover { text-decoration: underline; }
+    .src a { color: #50394c; text-decoration: underline; font-weight: 600;}
+    .src a:hover { color: #1d4ed8; }
 
     /* --- SHORTLIST CARDS --- */
     .uni-card {
-        background: white;
+        background: #ffffff;
         border-radius: 12px;
         padding: 1.5rem;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        border: 1px solid #b2b2b2;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         margin-bottom: 1rem;
+        border-top: 5px solid #50394c;
     }
-    .uni-card h3 { margin-top: 0; color: #1E293B; font-size: 1.2rem; }
+    .uni-card h3 { margin-top: 0; color: #50394c; font-size: 1.3rem; }
     .uni-tag {
         display: inline-block;
-        background: #DBEAFE;
-        color: #1E40AF;
-        padding: 4px 10px;
+        background: #f4e1d2;
+        color: #50394c;
+        padding: 6px 12px;
         border-radius: 6px;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         font-weight: 600;
         margin-right: 8px;
         margin-bottom: 8px;
+        border: 1px solid #b2b2b2;
     }
+    
+    /* --- EMPTY STATE --- */
+    .empty-state {
+        text-align: center; 
+        padding: 4rem 2rem; 
+        background: #ffffff; 
+        border-radius: 12px; 
+        border: 2px dashed #b2b2b2; 
+        margin-top: 1rem;
+    }
+    .empty-state h3 { color: #50394c; margin-bottom: 0.5rem; }
+    .empty-state p { color: #b2b2b2; font-size: 1rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -263,7 +306,7 @@ with st.sidebar:
         <div class="logo-icon">🧭</div>
         <div class="logo-text">
             <h2>Raah</h2>
-            <p>Career Pathway Navigator</p>
+            <p>Career Navigator</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -300,33 +343,33 @@ tab1, tab2 = st.tabs(["💬 Ask Raah", "📌 Build My Shortlist"])
 # --- TAB 1: ASK RAAH ---
 with tab1:
     st.markdown("### What would you like to know?")
-    st.markdown("<p style='color: #64748B; font-size: 0.9rem;'>Ask about eligibility, fees, deadlines or a university program.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #50394c; font-size: 0.95rem; margin-bottom: 1rem;'>Ask about eligibility, fees, deadlines or a university program.</p>", unsafe_allow_html=True)
     
     q = st.text_input("Ask Raah", placeholder="e.g., What are the eligibility requirements for BS Computer Science?", label_visibility="collapsed")
     
     # Quick Prompt Chips
-    st.markdown("<p style='font-size: 0.8rem; color: #64748B; margin-bottom: 5px;'>Suggested questions:</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.85rem; color: #50394c; font-weight: 600; margin-bottom: 8px;'>Suggested questions:</p>", unsafe_allow_html=True)
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        if st.button("📅 Admission Deadlines", use_container_width=True):
+        if st.button("📅 Admission Deadlines"):
             st.session_state.q_input = "What are the upcoming admission deadlines?"
     with c2:
-        if st.button("💰 Fee Structures", use_container_width=True):
+        if st.button("💰 Fee Structures"):
             st.session_state.q_input = "What is the fee structure for engineering programs?"
     with c3:
-        if st.button("🎓 Scholarships", use_container_width=True):
+        if st.button("🎓 Scholarships"):
             st.session_state.q_input = "Are there any merit-based scholarships available?"
     with c4:
-        if st.button("📋 Eligibility", use_container_width=True):
+        if st.button("📋 Eligibility"):
             st.session_state.q_input = "What is the eligibility criteria for Medical colleges?"
 
     # Submit Button aligned right
-    _, col_btn = st.columns([4, 1])
+    st.markdown("<br>", unsafe_allow_html=True) # Add a little space
+    _, col_btn = st.columns([3, 1])
     with col_btn:
         ask_clicked = st.button("Ask Raah ➔", type="primary", use_container_width=True)
 
     # Handle Ask Logic
-    # Check if a chip was clicked or the button was pressed
     query_to_run = st.session_state.get('q_input', q)
     
     if ask_clicked or (st.session_state.get('q_input') and not q):
@@ -338,18 +381,18 @@ with tab1:
                 ctx = "\n\n".join(f"[{h['university']} | {h['section']} | {h['year']}] {h['text']}" for h in hits)
                 with st.spinner("Thinking..."):
                     try:
+                        st.markdown("### Answer")
                         st.write(llm(f"Context:\n{ctx}\n\nQuestion:\n{query_to_run}"))
                         show_sources(hits)
                     except Exception as e:
                         st.error(f"The AI service failed ({e}). Please try again.")
-            # Clear the chip state after running
             if 'q_input' in st.session_state:
                 del st.session_state.q_input
 
 # --- TAB 2: BUILD MY SHORTLIST ---
 with tab2:
     st.markdown("### Build Your Shortlist")
-    st.markdown("<p style='color: #64748B; font-size: 0.9rem;'>Tell us about your profile and we'll suggest options from the knowledge base.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #50394c; font-size: 0.95rem; margin-bottom: 1rem;'>Tell us about your profile and we'll suggest options from the knowledge base.</p>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -359,6 +402,7 @@ with tab2:
         budget = st.text_input("Yearly Budget (PKR)", placeholder="e.g., 300000")
         pref_city = st.text_input("Preferred City", placeholder="e.g., Islamabad")
 
+    st.markdown("<br>", unsafe_allow_html=True)
     suggest_clicked = st.button("✨ Suggest Options", type="primary")
 
     if suggest_clicked:
@@ -376,15 +420,16 @@ with tab2:
                        "Say if the student may not meet the eligibility. Remind them to verify officially.")
                 with st.spinner("Comparing options..."):
                     try:
+                        st.markdown("### Suggested Options")
                         st.write(llm(msg))
                         show_sources(hits)
                     except Exception as e:
                         st.error(f"The AI service failed ({e}). Please try again.")
     else:
-        # Empty State Placeholder
+        # Beautiful Empty State
         st.markdown("""
-        <div style="text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 1px dashed #CBD5E1; margin-top: 2rem;">
-            <h3 style="color: #64748B; margin-bottom: 0.5rem;">Your shortlist is empty</h3>
-            <p style="color: #94A3B8; font-size: 0.9rem;">Fill in your details above and click "Suggest Options" to get started.</p>
+        <div class="empty-state">
+            <h3>Your shortlist is empty</h3>
+            <p>Fill in your details above and click "Suggest Options" to get started.</p>
         </div>
         """, unsafe_allow_html=True)
