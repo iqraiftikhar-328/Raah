@@ -1,0 +1,14 @@
+university: Demo University (SAMPLE - DELETE THIS FILE)
+city: Islamabad
+field: Computer Science
+year: 2026
+source: https://example.com/replace-with-official-page
+
+## Eligibility
+SAMPLE ONLY. Replace with text copied from the official admission page: minimum marks, required subjects, entry test.
+
+## Fees
+SAMPLE ONLY. Replace with the official fee structure text.
+
+## Deadlines
+SAMPLE ONLY. Replace with official application dates.
