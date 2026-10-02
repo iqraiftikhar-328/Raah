@@ -14,29 +14,34 @@ st.markdown("""
     /* Import Google Font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    /* Global Font */
-    html, body, [class*="css"] {
+    /* --- GLOBAL FORCE LIGHT MODE + PLUM TEXT --- */
+    html, body, [class*="css"], .stApp, .stMarkdown, p, h1, h2, h3, h4, h5, h6, label, span, div {
         font-family: 'Inter', sans-serif;
+        color: #50394c !important; /* Force all text to Deep Plum */
+    }
+    
+    /* Force App Background to Soft Peach */
+    .stApp {
+        background-color: #f4e1d2 !important;
     }
 
-    /* Hide default Streamlit elements for a cleaner app feel */
+    /* Hide default Streamlit elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
-    /* --- HERO SECTION --- */
+    /* --- HERO SECTION (Keep its own colors) --- */
     .hero {
         background: linear-gradient(135deg, #50394c 0%, #b2b2b2 100%);
         padding: 3rem 2rem;
         border-radius: 16px;
-        color: #f4e1d2;
         text-align: center;
         margin-bottom: 2rem;
         box-shadow: 0 10px 15px -3px rgba(80, 57, 76, 0.3);
     }
     .hero-badge {
         background-color: #ffef96;
-        color: #50394c;
+        color: #50394c !important;
         padding: 6px 14px;
         border-radius: 20px;
         font-size: 0.8rem;
@@ -50,7 +55,7 @@ st.markdown("""
         font-size: 2.8rem;
         font-weight: 700;
         margin: 0 0 1rem 0;
-        color: #ffffff;
+        color: #ffffff !important; /* Force white for contrast */
     }
     .hero p {
         font-size: 1.1rem;
@@ -58,13 +63,14 @@ st.markdown("""
         margin: 0 auto;
         opacity: 0.95;
         line-height: 1.6;
+        color: #f4e1d2 !important;
     }
 
     /* --- WARNING BANNER --- */
     .warn {
         background: #ffef96;
         border-left: 6px solid #50394c;
-        color: #50394c;
+        color: #50394c !important;
         padding: 1rem 1.5rem;
         border-radius: 8px;
         font-size: 0.9rem;
@@ -73,14 +79,21 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
-    /* --- SIDEBAR --- */
+    /* --- SIDEBAR (Force Dark Plum Background) --- */
     [data-testid="stSidebar"] {
-        background-color: #50394c;
+        background-color: #50394c !important;
         border-right: 1px solid #b2b2b2;
         padding-top: 2rem;
     }
     [data-testid="stSidebar"] * {
         color: #f4e1d2 !important;
+    }
+    [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
+        background-color: #f4e1d2 !important;
+        color: #50394c !important;
+    }
+    [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] * {
+        color: #50394c !important;
     }
     .logo-area {
         display: flex;
@@ -90,7 +103,7 @@ st.markdown("""
     }
     .logo-icon {
         background-color: #ffef96;
-        color: #50394c;
+        color: #50394c !important;
         width: 45px;
         height: 45px;
         border-radius: 12px;
@@ -103,93 +116,91 @@ st.markdown("""
     .logo-text h2 { margin: 0; font-size: 1.4rem; color: #ffef96 !important; }
     .logo-text p { margin: 0; font-size: 0.8rem; color: #b2b2b2 !important; }
 
-    /* --- INPUTS & BUTTONS --- */
+    /* --- INPUTS (Force White Background) --- */
     .stTextInput > div > div > input {
         border-radius: 10px;
         border: 2px solid #b2b2b2;
         padding: 14px 18px;
         font-size: 1rem;
-        background-color: #ffffff;
-        color: #50394c;
+        background-color: #ffffff !important;
+        color: #50394c !important;
         transition: all 0.3s ease;
+    }
+    .stTextInput > div > div > input::placeholder {
+        color: #b2b2b2 !important;
     }
     .stTextInput > div > div > input:focus {
         border-color: #50394c;
         box-shadow: 0 0 0 3px rgba(80, 57, 76, 0.2);
     }
     
-    /* Standard Buttons (Chips) */
+    /* Number Input */
+    .stNumberInput > div > div > input {
+        background-color: #ffffff !important;
+        color: #50394c !important;
+        border: 2px solid #b2b2b2;
+        border-radius: 10px;
+    }
+
+    /* --- BUTTONS --- */
     .stButton > button {
         border-radius: 10px;
         font-weight: 600;
         padding: 10px 20px;
-        background-color: #ffffff;
-        color: #50394c;
+        background-color: #ffffff !important;
+        color: #50394c !important;
         border: 1px solid #b2b2b2;
         transition: all 0.2s ease;
         width: 100%;
     }
     .stButton > button:hover {
-        background-color: #ffef96;
+        background-color: #ffef96 !important;
         border-color: #50394c;
-        color: #50394c;
+        color: #50394c !important;
     }
 
-    /* Primary Buttons */
     .stButton > button[kind="primary"] {
-        background-color: #50394c;
-        color: #f4e1d2;
+        background-color: #50394c !important;
+        color: #f4e1d2 !important;
         border: none;
         padding: 12px 30px;
         font-size: 1.05rem;
     }
     .stButton > button[kind="primary"]:hover {
-        background-color: #ffef96;
-        color: #50394c;
+        background-color: #ffef96 !important;
+        color: #50394c !important;
         box-shadow: 0 6px 12px rgba(80, 57, 76, 0.3);
         transform: translateY(-1px);
     }
 
-    /* --- FIXED: CUSTOM TABS (PROMINENT BUTTONS) --- */
-    /* Remove the default bottom border of the tab container */
+    /* --- TABS --- */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 20px; /* Increased gap between tabs */
+        gap: 20px;
         background-color: transparent;
-        border-bottom: none !important; /* Remove default line */
-        margin-bottom: 2rem; /* Space between tabs and content */
+        border-bottom: none !important;
+        margin-bottom: 2rem;
         padding-bottom: 0px;
     }
+    .stTabs [data-baseweb="tab-highlight"] { display: none !important; }
+    .stTabs [data-baseweb="tab-border"] { display: none !important; }
     
-    /* Remove the default red/pink highlight line */
-    .stTabs [data-baseweb="tab-highlight"] {
-        display: none !important;
-    }
-    .stTabs [data-baseweb="tab-border"] {
-        display: none !important;
-    }
-    
-    /* Style individual tabs as buttons */
     .stTabs [data-baseweb="tab"] {
         height: auto;
-        padding: 14px 28px; /* Increased padding for breathing room */
-        background-color: #ffffff;
+        padding: 14px 28px;
+        background-color: #ffffff !important;
         border-radius: 10px;
         border: 2px solid #b2b2b2;
-        color: #50394c;
+        color: #50394c !important;
         font-weight: 600;
         font-size: 1rem;
         transition: all 0.2s ease;
-        margin: 0; /* Ensure no default margins interfere */
+        margin: 0;
     }
-    
-    /* Hover state */
     .stTabs [data-baseweb="tab"]:hover {
-        background-color: #ffef96;
+        background-color: #ffef96 !important;
         border-color: #50394c;
-        color: #50394c;
+        color: #50394c !important;
     }
-    
-    /* Active/Selected Tab */
     .stTabs [aria-selected="true"] {
         background-color: #50394c !important;
         color: #f4e1d2 !important;
@@ -200,11 +211,11 @@ st.markdown("""
     /* --- SOURCE CARDS --- */
     .src {
         border-left: 5px solid #50394c;
-        background: #ffffff;
+        background: #ffffff !important;
         padding: 14px 18px;
         border-radius: 8px;
         margin: 10px 0;
-        color: #50394c;
+        color: #50394c !important;
         font-size: 0.9rem;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         border: 1px solid #b2b2b2;
@@ -214,19 +225,20 @@ st.markdown("""
 
     /* --- SHORTLIST CARDS --- */
     .uni-card {
-        background: #ffffff;
+        background: #ffffff !important;
         border-radius: 12px;
         padding: 1.5rem;
         border: 1px solid #b2b2b2;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         margin-bottom: 1rem;
         border-top: 5px solid #50394c;
+        color: #50394c !important;
     }
-    .uni-card h3 { margin-top: 0; color: #50394c; font-size: 1.3rem; }
+    .uni-card h3 { margin-top: 0; color: #50394c !important; font-size: 1.3rem; }
     .uni-tag {
         display: inline-block;
-        background: #f4e1d2;
-        color: #50394c;
+        background: #f4e1d2 !important;
+        color: #50394c !important;
         padding: 6px 12px;
         border-radius: 6px;
         font-size: 0.8rem;
@@ -240,18 +252,18 @@ st.markdown("""
     .empty-state {
         text-align: center; 
         padding: 4rem 2rem; 
-        background: #ffffff; 
+        background: #ffffff !important; 
         border-radius: 12px; 
         border: 2px dashed #b2b2b2; 
         margin-top: 1rem;
     }
-    .empty-state h3 { color: #50394c; margin-bottom: 0.5rem; }
-    .empty-state p { color: #b2b2b2; font-size: 1rem; }
+    .empty-state h3 { color: #50394c !important; margin-bottom: 0.5rem; }
+    .empty-state p { color: #b2b2b2 !important; font-size: 1rem; }
 </style>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 2. BACKEND LOGIC (Unchanged)
+# 2. BACKEND LOGIC
 # -----------------------------------------------------------------------------
 def secret(name, default=None):
     try:
@@ -364,7 +376,6 @@ with st.sidebar:
 # -----------------------------------------------------------------------------
 # 5. MAIN CONTENT
 # -----------------------------------------------------------------------------
-# Hero Section
 st.markdown("""
 <div class="hero">
     <div class="hero-badge">✨ AI-Powered Admissions Guide</div>
@@ -373,25 +384,22 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Warning Banner
 st.markdown("""
 <div class="warn">
     <b>⚠️ Important:</b> Raah helps you compare options. It can be wrong or outdated — always verify on the official university website. You make the final decision.
 </div>
 """, unsafe_allow_html=True)
 
-# Tabs (Now styled as buttons via CSS)
 tab1, tab2 = st.tabs(["💬 Ask Raah", "📌 Build My Shortlist"])
 
 # --- TAB 1: ASK RAAH ---
 with tab1:
     st.markdown("### What would you like to know?")
-    st.markdown("<p style='color: #50394c; font-size: 0.95rem; margin-bottom: 1rem;'>Ask about eligibility, fees, deadlines or a university program.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.95rem; margin-bottom: 1rem;'>Ask about eligibility, fees, deadlines or a university program.</p>", unsafe_allow_html=True)
     
     q = st.text_input("Ask Raah", placeholder="e.g., What are the eligibility requirements for BS Computer Science?", label_visibility="collapsed")
     
-    # Quick Prompt Chips
-    st.markdown("<p style='font-size: 0.85rem; color: #50394c; font-weight: 600; margin-bottom: 8px;'>Suggested questions:</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;'>Suggested questions:</p>", unsafe_allow_html=True)
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         if st.button("📅 Admission Deadlines"):
@@ -406,13 +414,11 @@ with tab1:
         if st.button("📋 Eligibility"):
             st.session_state.q_input = "What is the eligibility criteria for Medical colleges?"
 
-    # Submit Button aligned right
     st.markdown("<br>", unsafe_allow_html=True) 
     _, col_btn = st.columns([3, 1])
     with col_btn:
         ask_clicked = st.button("Ask Raah ➔", type="primary", use_container_width=True)
 
-    # Handle Ask Logic
     query_to_run = st.session_state.get('q_input', q)
     
     if ask_clicked or (st.session_state.get('q_input') and not q):
@@ -435,7 +441,7 @@ with tab1:
 # --- TAB 2: BUILD MY SHORTLIST ---
 with tab2:
     st.markdown("### Build Your Shortlist")
-    st.markdown("<p style='color: #50394c; font-size: 0.95rem; margin-bottom: 1rem;'>Tell us about your profile and we'll suggest options from the knowledge base.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 0.95rem; margin-bottom: 1rem;'>Tell us about your profile and we'll suggest options from the knowledge base.</p>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -469,7 +475,6 @@ with tab2:
                     except Exception as e:
                         st.error(f"The AI service failed ({e}). Please try again.")
     else:
-        # Beautiful Empty State
         st.markdown("""
         <div class="empty-state">
             <h3>Your shortlist is empty</h3>
