@@ -14,28 +14,11 @@ st.markdown("""
     /* Import Google Font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    /* ================================================================= */
-    /* THE ABSOLUTE FINAL FIX: Override Streamlit's internal variables   */
-    /* ================================================================= */
-    :root {
-        --background-color: #f4e1d2 !important;
-        --secondary-background-color: #ffffff !important;
-        --text-color: #50394c !important;
-        --primary-color: #50394c !important;
-        --font: 'Inter', sans-serif !important;
+    /* Global Font (No color override here) */
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
     }
-
-    /* Force everything to be visible */
-    * {
-        opacity: 1.0 !important; /* Fixes the "washed out" text */
-        font-family: 'Inter', sans-serif !important;
-    }
-
-    /* Force all text to be Deep Plum */
-    h1, h2, h3, h4, h5, h6, p, span, div, label, li, a {
-        color: #50394c !important;
-    }
-
+    
     /* Force App Background to Soft Peach */
     .stApp, [data-testid="stAppViewContainer"] {
         background-color: #f4e1d2 !important;
@@ -46,9 +29,25 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
+    /* --- TEXT COLORS (Scoped to avoid breaking icons) --- */
+    h1, h2, h3, h4, h5, h6, p, label {
+        color: #50394c !important; /* Deep Plum */
+    }
+    /* Fix for Streamlit's markdown paragraphs */
+    [data-testid="stMarkdownContainer"] p {
+        color: #50394c !important;
+    }
+    /* Fix for the expander text specifically */
+    [data-testid="stExpander"] summary {
+        color: #50394c !important;
+    }
+    [data-testid="stExpander"] summary span {
+        color: #50394c !important;
+    }
+
     /* --- HERO SECTION --- */
     .hero {
-        background: linear-gradient(135deg, #50394c 0%, #b2b2b2 100%) !important;
+        background: linear-gradient(135deg, #50394c 0%, #b2b2b2 100%);
         padding: 3rem 2rem;
         border-radius: 16px;
         text-align: center;
@@ -56,7 +55,7 @@ st.markdown("""
         box-shadow: 0 10px 15px -3px rgba(80, 57, 76, 0.3);
     }
     .hero-badge {
-        background-color: #ffef96 !important;
+        background-color: #ffef96;
         color: #50394c !important;
         padding: 6px 14px;
         border-radius: 20px;
@@ -83,7 +82,7 @@ st.markdown("""
 
     /* --- WARNING BANNER --- */
     .warn {
-        background: #ffef96 !important;
+        background: #ffef96;
         border-left: 6px solid #50394c;
         color: #50394c !important;
         padding: 1rem 1.5rem;
@@ -93,7 +92,6 @@ st.markdown("""
         margin-bottom: 2rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-    .warn * { color: #50394c !important; }
 
     /* --- SIDEBAR --- */
     [data-testid="stSidebar"] {
@@ -101,22 +99,23 @@ st.markdown("""
         border-right: 1px solid #b2b2b2;
         padding-top: 2rem;
     }
-    [data-testid="stSidebar"] * {
+    /* Force all sidebar text to be light peach */
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label, [data-testid="stSidebar"] span, [data-testid="stSidebar"] div {
         color: #f4e1d2 !important;
     }
-    /* Force Sidebar Dropdowns to be Solid Peach */
+    /* Force Dropdowns to be Peach with Plum text */
     [data-testid="stSidebar"] div[data-baseweb="select"] {
         background-color: #f4e1d2 !important;
         border-radius: 8px;
     }
     [data-testid="stSidebar"] div[data-baseweb="select"] * {
         color: #50394c !important;
-        background-color: #f4e1d2 !important;
+        background-color: transparent !important;
     }
     
     .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
     .logo-icon {
-        background-color: #ffef96 !important;
+        background-color: #ffef96;
         color: #50394c !important;
         width: 45px; height: 45px; border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
@@ -125,12 +124,12 @@ st.markdown("""
     .logo-text h2 { margin: 0; font-size: 1.4rem; color: #ffef96 !important; }
     .logo-text p { margin: 0; font-size: 0.8rem; color: #b2b2b2 !important; }
 
-    /* --- MAIN INPUTS (Force Solid White Background) --- */
+    /* --- INPUTS (Force White Background) --- */
     .stTextInput > div > div > input, .stNumberInput > div > div > input {
-        border-radius: 10px !important;
-        border: 2px solid #b2b2b2 !important;
-        padding: 14px 18px !important;
-        font-size: 1rem !important;
+        border-radius: 10px;
+        border: 2px solid #b2b2b2;
+        padding: 14px 18px;
+        font-size: 1rem;
         background-color: #ffffff !important;
         color: #50394c !important;
         -webkit-text-fill-color: #50394c !important;
@@ -140,102 +139,103 @@ st.markdown("""
         -webkit-text-fill-color: #b2b2b2 !important;
     }
     .stTextInput > div > div > input:focus, .stNumberInput > div > div > input:focus {
-        border-color: #50394c !important;
-        box-shadow: 0 0 0 3px rgba(80, 57, 76, 0.2) !important;
+        border-color: #50394c;
+        box-shadow: 0 0 0 3px rgba(80, 57, 76, 0.2);
     }
 
     /* --- BUTTONS --- */
     .stButton > button {
-        border-radius: 10px !important;
-        font-weight: 600 !important;
-        padding: 10px 20px !important;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 10px 20px;
         background-color: #ffffff !important;
         color: #50394c !important;
-        border: 1px solid #b2b2b2 !important;
-        transition: all 0.2s ease !important;
-        width: 100% !important;
+        border: 1px solid #b2b2b2;
+        transition: all 0.2s ease;
+        width: 100%;
     }
-    .stButton > button * { color: #50394c !important; }
     .stButton > button:hover {
         background-color: #ffef96 !important;
-        border-color: #50394c !important;
+        border-color: #50394c;
+        color: #50394c !important;
     }
-    .stButton > button:hover * { color: #50394c !important; }
 
     /* Primary Buttons */
     .stButton > button[kind="primary"] {
         background-color: #50394c !important;
-        border: none !important;
-        padding: 12px 30px !important;
-        font-size: 1.05rem !important;
+        color: #f4e1d2 !important;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1.05rem;
     }
-    .stButton > button[kind="primary"] * { color: #f4e1d2 !important; }
     .stButton > button[kind="primary"]:hover {
         background-color: #ffef96 !important;
-        box-shadow: 0 6px 12px rgba(80, 57, 76, 0.3) !important;
-        transform: translateY(-1px) !important;
+        color: #50394c !important;
+        box-shadow: 0 6px 12px rgba(80, 57, 76, 0.3);
+        transform: translateY(-1px);
     }
-    .stButton > button[kind="primary"]:hover * { color: #50394c !important; }
 
     /* --- TABS --- */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 20px !important;
-        background-color: transparent !important;
+        gap: 20px;
+        background-color: transparent;
         border-bottom: none !important;
-        margin-bottom: 2rem !important;
+        margin-bottom: 2rem;
+        padding-bottom: 0px;
     }
     .stTabs [data-baseweb="tab-highlight"] { display: none !important; }
     .stTabs [data-baseweb="tab-border"] { display: none !important; }
     
     .stTabs [data-baseweb="tab"] {
-        height: auto !important;
-        padding: 14px 28px !important;
+        height: auto;
+        padding: 14px 28px;
         background-color: #ffffff !important;
-        border-radius: 10px !important;
-        border: 2px solid #b2b2b2 !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        transition: all 0.2s ease !important;
-        margin: 0 !important;
+        border-radius: 10px;
+        border: 2px solid #b2b2b2;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        margin: 0;
     }
-    .stTabs [data-baseweb="tab"] * { color: #50394c !important; }
+    .stTabs [data-baseweb="tab"] p { color: #50394c !important; }
+    
     .stTabs [data-baseweb="tab"]:hover {
         background-color: #ffef96 !important;
-        border-color: #50394c !important;
+        border-color: #50394c;
     }
     .stTabs [aria-selected="true"] {
         background-color: #50394c !important;
         border-color: #50394c !important;
-        box-shadow: 0 4px 6px rgba(80, 57, 76, 0.3) !important;
+        box-shadow: 0 4px 6px rgba(80, 57, 76, 0.3);
     }
-    .stTabs [aria-selected="true"] * { color: #f4e1d2 !important; }
+    .stTabs [aria-selected="true"] p { color: #f4e1d2 !important; }
 
     /* --- SOURCE CARDS --- */
     .src {
-        border-left: 5px solid #50394c !important;
+        border-left: 5px solid #50394c;
         background: #ffffff !important;
-        padding: 14px 18px !important;
-        border-radius: 8px !important;
-        margin: 10px 0 !important;
-        font-size: 0.9rem !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
-        border: 1px solid #b2b2b2 !important;
+        padding: 14px 18px;
+        border-radius: 8px;
+        margin: 10px 0;
+        color: #50394c !important;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border: 1px solid #b2b2b2;
     }
-    .src * { color: #50394c !important; }
-    .src a { color: #1d4ed8 !important; text-decoration: underline !important; font-weight: 600 !important;}
+    .src b { color: #50394c !important; }
+    .src a { color: #1d4ed8 !important; text-decoration: underline; font-weight: 600;}
 
     /* --- EMPTY STATE --- */
     .empty-state {
-        text-align: center !important;
-        padding: 4rem 2rem !important;
-        background: #ffffff !important;
-        border-radius: 12px !important;
-        border: 2px dashed #b2b2b2 !important;
-        margin-top: 1rem !important;
+        text-align: center; 
+        padding: 4rem 2rem; 
+        background: #ffffff !important; 
+        border-radius: 12px; 
+        border: 2px dashed #b2b2b2; 
+        margin-top: 1rem;
     }
-    .empty-state * { color: #50394c !important; }
-    .empty-state p { color: #b2b2b2 !important; }
-
+    .empty-state h3 { color: #50394c !important; margin-bottom: 0.5rem; }
+    .empty-state p { color: #b2b2b2 !important; font-size: 1rem; }
 </style>
 """, unsafe_allow_html=True)
 
