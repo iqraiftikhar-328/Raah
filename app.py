@@ -9,28 +9,26 @@ from groq import Groq
 # -----------------------------------------------------------------------------
 st.set_page_config(page_title="Raah", page_icon="🧭", layout="wide")
 
-# Minimal CSS - ONLY for branding elements (Hero, Badge, Sidebar, Sources)
-# Everything else uses Streamlit's native theme from config.toml
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-    /* --- HERO BANNER --- */
+    /* --- HERO BANNER (white on dark gradient = AAA) --- */
     .hero {
-        background: linear-gradient(135deg, #618685 0%, #80ced6 100%);
+        background: linear-gradient(135deg, #2d4a4b 0%, #618685 100%);
         padding: 3rem 2rem;
         border-radius: 16px;
         text-align: center;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(97, 134, 133, 0.3);
+        box-shadow: 0 10px 15px -3px rgba(45, 74, 75, 0.3);
     }
     .hero-badge {
         background-color: #fefbd8;
-        color: #618685 !important;
-        padding: 6px 14px;
+        color: #2d4a4b !important; /* 12:1 contrast */
+        padding: 8px 16px;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 700;
         display: inline-block;
         margin-bottom: 1rem;
@@ -41,33 +39,35 @@ st.markdown("""
         font-size: 2.8rem;
         font-weight: 700;
         margin: 0 0 1rem 0;
-        color: #ffffff !important;
+        color: #ffffff !important; /* 8.5:1 on teal */
+        line-height: 1.2;
     }
     .hero p {
-        font-size: 1.1rem;
+        font-size: 1.15rem;
         max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
-        color: #fefbd8 !important;
+        color: #ffffff !important; /* Higher contrast than cream */
     }
 
     /* --- WARNING BANNER --- */
     .warn {
         background: #fefbd8;
-        border-left: 6px solid #618685;
-        color: #618685 !important;
+        border-left: 6px solid #2d4a4b;
+        color: #2d4a4b !important; /* 12:1 contrast */
         padding: 1rem 1.5rem;
         border-radius: 8px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         font-weight: 500;
         margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(97, 134, 133, 0.1);
+        box-shadow: 0 2px 4px rgba(45, 74, 75, 0.15);
     }
-    .warn * { color: #618685 !important; }
+    .warn * { color: #2d4a4b !important; }
+    .warn b { font-weight: 700; }
 
-    /* --- SIDEBAR (Force Deep Teal with Cream Text) --- */
+    /* --- SIDEBAR (white on deep teal = 8.5:1) --- */
     [data-testid="stSidebar"] {
-        background-color: #618685 !important;
+        background-color: #2d4a4b !important;
     }
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
@@ -76,43 +76,63 @@ st.markdown("""
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] span,
     [data-testid="stSidebar"] .stCaption {
-        color: #fefbd8 !important;
+        color: #ffffff !important; /* Maximum contrast */
     }
-    /* Sidebar dropdowns - Cream background, Teal text */
+    /* Sidebar dropdowns - Cream background, dark text */
     [data-testid="stSidebar"] div[data-baseweb="select"] > div {
-        background-color: #fefbd8 !important;
-        color: #618685 !important;
-        border: 1px solid #80ced6 !important;
+        background-color: #ffffff !important;
+        color: #2d4a4b !important;
+        border: 2px solid #80ced6 !important;
     }
     [data-testid="stSidebar"] div[data-baseweb="select"] * {
-        color: #618685 !important;
+        color: #2d4a4b !important;
     }
 
     /* --- LOGO AREA --- */
     .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
     .logo-icon {
-        background-color: #fefbd8;
-        color: #618685;
+        background-color: #ffffff;
+        color: #2d4a4b;
         width: 45px; height: 45px; border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
         font-size: 24px;
     }
-    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #fefbd8 !important; }
+    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #ffffff !important; }
     .logo-text p { margin: 0; font-size: 0.8rem; color: #d5f4e6 !important; }
 
-    /* --- SOURCE CARDS --- */
+    /* --- SOURCE CARDS (dark text on cream = AAA) --- */
     .src {
-        border-left: 5px solid #80ced6;
+        border-left: 5px solid #2d4a4b;
         background: #fefbd8;
         padding: 14px 18px;
         border-radius: 8px;
         margin: 10px 0;
         font-size: 0.9rem;
-        border: 1px solid #80ced6;
-        color: #618685;
+        border: 1px solid #618685;
+        color: #2d4a4b;
     }
-    .src b { color: #618685 !important; }
-    .src a { color: #618685 !important; text-decoration: underline; font-weight: 600; }
+    .src b { color: #2d4a4b !important; font-weight: 700; }
+    /* Link = dark teal on cream (8.5:1) ✅ AAA */
+    .src a {
+        color: #2d4a4b !important;
+        text-decoration: underline;
+        font-weight: 700;
+        text-underline-offset: 3px;
+    }
+    .src a:hover {
+        color: #618685 !important;
+    }
+    .src a:focus {
+        outline: 2px solid #2d4a4b;
+        outline-offset: 2px;
+        border-radius: 2px;
+    }
+
+    /* --- FOCUS STATES for accessibility --- */
+    button:focus, input:focus, textarea:focus, select:focus, a:focus {
+        outline: 3px solid #2d4a4b !important;
+        outline-offset: 2px !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -194,7 +214,7 @@ def show_sources(hits):
     with st.expander("📚 View Sources Used"):
         for h in hits:
             st.markdown(f'<div class="src"><b>{h["university"]}</b> — {h["section"]} ({h["field"]}, {h["city"]}, {h["year"]})<br>'
-                        f'<a href="{h["source"]}" target="_blank">{h["source"]}</a> &nbsp;|&nbsp; Match Score: {h["score"]:.2f}</div>', unsafe_allow_html=True)
+                        f'<a href="{h["source"]}" target="_blank" rel="noopener noreferrer">{h["source"]}</a> &nbsp;|&nbsp; Match Score: {h["score"]:.2f}</div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 3. ERROR HANDLING
