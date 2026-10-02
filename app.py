@@ -9,7 +9,6 @@ from groq import Groq
 # -----------------------------------------------------------------------------
 st.set_page_config(page_title="Raah", page_icon="🧭", layout="wide")
 
-# Custom CSS using the requested color palette
 st.markdown("""
 <style>
     /* Import Google Font */
@@ -107,7 +106,6 @@ st.markdown("""
     .logo-text p { margin: 0; font-size: 0.8rem; color: #b2b2b2 !important; }
 
     /* --- INPUTS & BUTTONS --- */
-    /* Target the text input box specifically */
     .stTextInput > div > div > input {
         border-radius: 10px;
         border: 2px solid #b2b2b2;
@@ -152,6 +150,52 @@ st.markdown("""
         color: #50394c;
         box-shadow: 0 6px 12px rgba(80, 57, 76, 0.3);
         transform: translateY(-1px);
+    }
+
+    /* --- CUSTOM TABS (PROMINENT BUTTONS) --- */
+    /* Target the tab list container */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 12px;
+        background-color: transparent;
+        padding-bottom: 0px;
+        border-bottom: none;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Target individual tabs */
+    .stTabs [data-baseweb="tab"] {
+        height: auto;
+        padding: 12px 24px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        border: 2px solid #b2b2b2;
+        color: #50394c;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    /* Hover state for tabs */
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #ffef96;
+        border-color: #50394c;
+        color: #50394c;
+    }
+    
+    /* Active/Selected Tab */
+    .stTabs [aria-selected="true"] {
+        background-color: #50394c !important;
+        color: #f4e1d2 !important;
+        border-color: #50394c !important;
+        box-shadow: 0 4px 6px rgba(80, 57, 76, 0.3);
+    }
+    
+    /* Remove the default red highlight line underneath tabs */
+    .stTabs [data-baseweb="tab-highlight"] {
+        display: none;
+    }
+    .stTabs [data-baseweb="tab-border"] {
+        display: none;
     }
 
     /* --- SOURCE CARDS --- */
@@ -337,7 +381,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Tabs
+# Tabs (Now styled as buttons via CSS)
 tab1, tab2 = st.tabs(["💬 Ask Raah", "📌 Build My Shortlist"])
 
 # --- TAB 1: ASK RAAH ---
@@ -364,7 +408,7 @@ with tab1:
             st.session_state.q_input = "What is the eligibility criteria for Medical colleges?"
 
     # Submit Button aligned right
-    st.markdown("<br>", unsafe_allow_html=True) # Add a little space
+    st.markdown("<br>", unsafe_allow_html=True) 
     _, col_btn = st.columns([3, 1])
     with col_btn:
         ask_clicked = st.button("Ask Raah ➔", type="primary", use_container_width=True)
