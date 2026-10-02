@@ -5,58 +5,29 @@ from sentence_transformers import SentenceTransformer
 from groq import Groq
 
 # -----------------------------------------------------------------------------
-# 1. PAGE CONFIGURATION & CUSTOM CSS
+# 1. PAGE CONFIGURATION
 # -----------------------------------------------------------------------------
 st.set_page_config(page_title="Raah", page_icon="🧭", layout="wide")
 
+# Minimal CSS - ONLY for branding elements (Hero, Badge, Sidebar, Sources)
+# Everything else uses Streamlit's native theme from config.toml
 st.markdown("""
 <style>
-    /* Import Google Font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-    /* Global Font (No color override here) */
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
-    }
-    
-    /* Force App Background to Soft Peach */
-    .stApp, [data-testid="stAppViewContainer"] {
-        background-color: #f4e1d2 !important;
-    }
-
-    /* Hide default Streamlit elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-
-    /* --- TEXT COLORS (Scoped to avoid breaking icons) --- */
-    h1, h2, h3, h4, h5, h6, p, label {
-        color: #50394c !important; /* Deep Plum */
-    }
-    /* Fix for Streamlit's markdown paragraphs */
-    [data-testid="stMarkdownContainer"] p {
-        color: #50394c !important;
-    }
-    /* Fix for the expander text specifically */
-    [data-testid="stExpander"] summary {
-        color: #50394c !important;
-    }
-    [data-testid="stExpander"] summary span {
-        color: #50394c !important;
-    }
-
-    /* --- HERO SECTION --- */
+    /* --- HERO BANNER --- */
     .hero {
-        background: linear-gradient(135deg, #50394c 0%, #b2b2b2 100%);
+        background: linear-gradient(135deg, #618685 0%, #80ced6 100%);
         padding: 3rem 2rem;
         border-radius: 16px;
         text-align: center;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(80, 57, 76, 0.3);
+        box-shadow: 0 10px 15px -3px rgba(97, 134, 133, 0.3);
     }
     .hero-badge {
-        background-color: #ffef96;
-        color: #50394c !important;
+        background-color: #fefbd8;
+        color: #618685 !important;
         padding: 6px 14px;
         border-radius: 20px;
         font-size: 0.8rem;
@@ -77,165 +48,71 @@ st.markdown("""
         max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
-        color: #f4e1d2 !important;
+        color: #fefbd8 !important;
     }
 
     /* --- WARNING BANNER --- */
     .warn {
-        background: #ffef96;
-        border-left: 6px solid #50394c;
-        color: #50394c !important;
+        background: #fefbd8;
+        border-left: 6px solid #618685;
+        color: #618685 !important;
         padding: 1rem 1.5rem;
         border-radius: 8px;
         font-size: 0.9rem;
         font-weight: 500;
         margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 4px rgba(97, 134, 133, 0.1);
     }
+    .warn * { color: #618685 !important; }
 
-    /* --- SIDEBAR --- */
+    /* --- SIDEBAR (Force Deep Teal with Cream Text) --- */
     [data-testid="stSidebar"] {
-        background-color: #50394c !important;
-        border-right: 1px solid #b2b2b2;
-        padding-top: 2rem;
+        background-color: #618685 !important;
     }
-    /* Force all sidebar text to be light peach */
-    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label, [data-testid="stSidebar"] span, [data-testid="stSidebar"] div {
-        color: #f4e1d2 !important;
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] .stCaption {
+        color: #fefbd8 !important;
     }
-    /* Force Dropdowns to be Peach with Plum text */
-    [data-testid="stSidebar"] div[data-baseweb="select"] {
-        background-color: #f4e1d2 !important;
-        border-radius: 8px;
+    /* Sidebar dropdowns - Cream background, Teal text */
+    [data-testid="stSidebar"] div[data-baseweb="select"] > div {
+        background-color: #fefbd8 !important;
+        color: #618685 !important;
+        border: 1px solid #80ced6 !important;
     }
     [data-testid="stSidebar"] div[data-baseweb="select"] * {
-        color: #50394c !important;
-        background-color: transparent !important;
+        color: #618685 !important;
     }
-    
-    .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
+
+    /* --- LOGO AREA --- */
+    .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
     .logo-icon {
-        background-color: #ffef96;
-        color: #50394c !important;
+        background-color: #fefbd8;
+        color: #618685;
         width: 45px; height: 45px; border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        font-size: 24px;
     }
-    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #ffef96 !important; }
-    .logo-text p { margin: 0; font-size: 0.8rem; color: #b2b2b2 !important; }
-
-    /* --- INPUTS (Force White Background) --- */
-    .stTextInput > div > div > input, .stNumberInput > div > div > input {
-        border-radius: 10px;
-        border: 2px solid #b2b2b2;
-        padding: 14px 18px;
-        font-size: 1rem;
-        background-color: #ffffff !important;
-        color: #50394c !important;
-        -webkit-text-fill-color: #50394c !important;
-    }
-    .stTextInput > div > div > input::placeholder, .stNumberInput > div > div > input::placeholder {
-        color: #b2b2b2 !important;
-        -webkit-text-fill-color: #b2b2b2 !important;
-    }
-    .stTextInput > div > div > input:focus, .stNumberInput > div > div > input:focus {
-        border-color: #50394c;
-        box-shadow: 0 0 0 3px rgba(80, 57, 76, 0.2);
-    }
-
-    /* --- BUTTONS --- */
-    .stButton > button {
-        border-radius: 10px;
-        font-weight: 600;
-        padding: 10px 20px;
-        background-color: #ffffff !important;
-        color: #50394c !important;
-        border: 1px solid #b2b2b2;
-        transition: all 0.2s ease;
-        width: 100%;
-    }
-    .stButton > button:hover {
-        background-color: #ffef96 !important;
-        border-color: #50394c;
-        color: #50394c !important;
-    }
-
-    /* Primary Buttons */
-    .stButton > button[kind="primary"] {
-        background-color: #50394c !important;
-        color: #f4e1d2 !important;
-        border: none;
-        padding: 12px 30px;
-        font-size: 1.05rem;
-    }
-    .stButton > button[kind="primary"]:hover {
-        background-color: #ffef96 !important;
-        color: #50394c !important;
-        box-shadow: 0 6px 12px rgba(80, 57, 76, 0.3);
-        transform: translateY(-1px);
-    }
-
-    /* --- TABS --- */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 20px;
-        background-color: transparent;
-        border-bottom: none !important;
-        margin-bottom: 2rem;
-        padding-bottom: 0px;
-    }
-    .stTabs [data-baseweb="tab-highlight"] { display: none !important; }
-    .stTabs [data-baseweb="tab-border"] { display: none !important; }
-    
-    .stTabs [data-baseweb="tab"] {
-        height: auto;
-        padding: 14px 28px;
-        background-color: #ffffff !important;
-        border-radius: 10px;
-        border: 2px solid #b2b2b2;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all 0.2s ease;
-        margin: 0;
-    }
-    .stTabs [data-baseweb="tab"] p { color: #50394c !important; }
-    
-    .stTabs [data-baseweb="tab"]:hover {
-        background-color: #ffef96 !important;
-        border-color: #50394c;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #50394c !important;
-        border-color: #50394c !important;
-        box-shadow: 0 4px 6px rgba(80, 57, 76, 0.3);
-    }
-    .stTabs [aria-selected="true"] p { color: #f4e1d2 !important; }
+    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #fefbd8 !important; }
+    .logo-text p { margin: 0; font-size: 0.8rem; color: #d5f4e6 !important; }
 
     /* --- SOURCE CARDS --- */
     .src {
-        border-left: 5px solid #50394c;
-        background: #ffffff !important;
+        border-left: 5px solid #80ced6;
+        background: #fefbd8;
         padding: 14px 18px;
         border-radius: 8px;
         margin: 10px 0;
-        color: #50394c !important;
         font-size: 0.9rem;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        border: 1px solid #b2b2b2;
+        border: 1px solid #80ced6;
+        color: #618685;
     }
-    .src b { color: #50394c !important; }
-    .src a { color: #1d4ed8 !important; text-decoration: underline; font-weight: 600;}
-
-    /* --- EMPTY STATE --- */
-    .empty-state {
-        text-align: center; 
-        padding: 4rem 2rem; 
-        background: #ffffff !important; 
-        border-radius: 12px; 
-        border: 2px dashed #b2b2b2; 
-        margin-top: 1rem;
-    }
-    .empty-state h3 { color: #50394c !important; margin-bottom: 0.5rem; }
-    .empty-state p { color: #b2b2b2 !important; font-size: 1rem; }
+    .src b { color: #618685 !important; }
+    .src a { color: #618685 !important; text-decoration: underline; font-weight: 600; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -372,11 +249,11 @@ tab1, tab2 = st.tabs(["💬 Ask Raah", "📌 Build My Shortlist"])
 # --- TAB 1: ASK RAAH ---
 with tab1:
     st.markdown("### What would you like to know?")
-    st.markdown("<p style='font-size: 0.95rem; margin-bottom: 1rem;'>Ask about eligibility, fees, deadlines or a university program.</p>", unsafe_allow_html=True)
+    st.markdown("Ask about eligibility, fees, deadlines or a university program.")
     
     q = st.text_input("Ask Raah", placeholder="e.g., What are the eligibility requirements for BS Computer Science?", label_visibility="collapsed")
     
-    st.markdown("<p style='font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;'>Suggested questions:</p>", unsafe_allow_html=True)
+    st.markdown("**Suggested questions:**")
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         if st.button("📅 Admission Deadlines"):
@@ -391,7 +268,6 @@ with tab1:
         if st.button("📋 Eligibility"):
             st.session_state.q_input = "What is the eligibility criteria for Medical colleges?"
 
-    st.markdown("<br>", unsafe_allow_html=True) 
     _, col_btn = st.columns([3, 1])
     with col_btn:
         ask_clicked = st.button("Ask Raah ➔", type="primary", use_container_width=True)
@@ -418,7 +294,7 @@ with tab1:
 # --- TAB 2: BUILD MY SHORTLIST ---
 with tab2:
     st.markdown("### Build Your Shortlist")
-    st.markdown("<p style='font-size: 0.95rem; margin-bottom: 1rem;'>Tell us about your profile and we'll suggest options from the knowledge base.</p>", unsafe_allow_html=True)
+    st.markdown("Tell us about your profile and we'll suggest options from the knowledge base.")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -428,7 +304,6 @@ with tab2:
         budget = st.text_input("Yearly Budget (PKR)", placeholder="e.g., 300000")
         pref_city = st.text_input("Preferred City", placeholder="e.g., Islamabad")
 
-    st.markdown("<br>", unsafe_allow_html=True)
     suggest_clicked = st.button("✨ Suggest Options", type="primary")
 
     if suggest_clicked:
@@ -452,9 +327,4 @@ with tab2:
                     except Exception as e:
                         st.error(f"The AI service failed ({e}). Please try again.")
     else:
-        st.markdown("""
-        <div class="empty-state">
-            <h3>Your shortlist is empty</h3>
-            <p>Fill in your details above and click "Suggest Options" to get started.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("💡 Fill in your details above and click **Suggest Options** to get started.")
