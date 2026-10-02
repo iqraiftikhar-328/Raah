@@ -79,11 +79,9 @@ st.markdown("""
         border-right: 1px solid #b2b2b2;
         padding-top: 2rem;
     }
-    /* Force sidebar text to be light peach so it's visible on plum background */
     [data-testid="stSidebar"] * {
         color: #f4e1d2 !important;
     }
-    /* Logo Area */
     .logo-area {
         display: flex;
         align-items: center;
@@ -137,7 +135,7 @@ st.markdown("""
         color: #50394c;
     }
 
-    /* Primary Buttons (Ask Raah / Suggest Options) */
+    /* Primary Buttons */
     .stButton > button[kind="primary"] {
         background-color: #50394c;
         color: #f4e1d2;
@@ -152,20 +150,28 @@ st.markdown("""
         transform: translateY(-1px);
     }
 
-    /* --- CUSTOM TABS (PROMINENT BUTTONS) --- */
-    /* Target the tab list container */
+    /* --- FIXED: CUSTOM TABS (PROMINENT BUTTONS) --- */
+    /* Remove the default bottom border of the tab container */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
+        gap: 20px; /* Increased gap between tabs */
         background-color: transparent;
+        border-bottom: none !important; /* Remove default line */
+        margin-bottom: 2rem; /* Space between tabs and content */
         padding-bottom: 0px;
-        border-bottom: none;
-        margin-bottom: 1.5rem;
     }
     
-    /* Target individual tabs */
+    /* Remove the default red/pink highlight line */
+    .stTabs [data-baseweb="tab-highlight"] {
+        display: none !important;
+    }
+    .stTabs [data-baseweb="tab-border"] {
+        display: none !important;
+    }
+    
+    /* Style individual tabs as buttons */
     .stTabs [data-baseweb="tab"] {
         height: auto;
-        padding: 12px 24px;
+        padding: 14px 28px; /* Increased padding for breathing room */
         background-color: #ffffff;
         border-radius: 10px;
         border: 2px solid #b2b2b2;
@@ -173,9 +179,10 @@ st.markdown("""
         font-weight: 600;
         font-size: 1rem;
         transition: all 0.2s ease;
+        margin: 0; /* Ensure no default margins interfere */
     }
     
-    /* Hover state for tabs */
+    /* Hover state */
     .stTabs [data-baseweb="tab"]:hover {
         background-color: #ffef96;
         border-color: #50394c;
@@ -188,14 +195,6 @@ st.markdown("""
         color: #f4e1d2 !important;
         border-color: #50394c !important;
         box-shadow: 0 4px 6px rgba(80, 57, 76, 0.3);
-    }
-    
-    /* Remove the default red highlight line underneath tabs */
-    .stTabs [data-baseweb="tab-highlight"] {
-        display: none;
-    }
-    .stTabs [data-baseweb="tab-border"] {
-        display: none;
     }
 
     /* --- SOURCE CARDS --- */
