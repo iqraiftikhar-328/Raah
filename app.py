@@ -7,7 +7,7 @@ from groq import Groq
 
 st.set_page_config(page_title="Raah - Career Navigator", page_icon="🧭", layout="wide")
 S = st.session_state
-for k, v in {"history": [], "shortlist": "", "cl": [], "q": ""}.items():
+for k, v in {"history": [], "shortlist": "", "cl": [], "q": "", "chat_open": False}.items():
     S.setdefault(k, v)
 
 # ---------- Styling (palette + accessibility + light/dark) ----------
@@ -37,8 +37,8 @@ input,textarea{background:%INBG%!important;color:%INTX%!important;-webkit-text-f
 .stButton>button,.stDownloadButton>button{background:#618685;color:#fff;border:0;border-radius:8px;font-weight:600}
 .stButton>button:hover,.stDownloadButton>button:hover{background:#2d4a4b;color:#fff}
 .stButton>button *,.stDownloadButton>button *{color:#fff!important}
-.hero{background:#2d4a4b;border-radius:16px;padding:26px;margin-bottom:14px}
-.hero .title{color:#ffffff!important;font-size:2.2rem;font-weight:800;line-height:1.2;margin:10px 0}
+.hero{background:linear-gradient(135deg,#2d4a4b 0%,#3f6b6c 100%);border-radius:20px;padding:36px;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.hero .title{color:#ffffff!important;font-size:2.8rem;font-weight:800;line-height:1.2;margin:10px 0}
 .hero .hero-body{background:#618685;color:#ffffff!important;padding:12px 16px;border-radius:10px}
 .hero .badge{background:#fefbd8;color:#2d4a4b!important;padding:4px 12px;border-radius:999px;font-weight:700;font-size:.85rem}
 .warn{background:#fefbd8;color:#2d4a4b!important;border-left:6px solid #2d4a4b;padding:12px 16px;border-radius:8px;margin-bottom:12px}
@@ -53,6 +53,15 @@ section[data-testid="stSidebar"] div[data-baseweb="select"] svg{fill:#2d4a4b!imp
 .sbh{font-size:1.15rem;font-weight:700;margin:14px 0 6px}
 :focus-visible{outline:3px solid #618685!important;outline-offset:2px}
 [data-testid="stSidebar"] :focus-visible{outline-color:#fefbd8!important}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:14px 0}
+.fcard{background:%CARD%;border:1px solid #618685;border-radius:16px;padding:16px;transition:transform .2s}
+.fcard:hover{transform:translateY(-4px)}
+.fcard .ic{font-size:1.8rem}
+.fcard h4{margin:.3rem 0;color:%TX%!important}
+.fcard p{margin:0;color:%TX%!important}
+.st-key-fab{position:fixed;right:22px;bottom:22px;z-index:1001;width:auto!important}
+.st-key-fab button{width:62px;height:62px;border-radius:50%;font-size:1.6rem;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.st-key-chatbox{position:fixed;right:22px;bottom:96px;width:min(420px,92vw);max-height:68vh;overflow-y:auto;background:%BG%;border:2px solid #618685;border-radius:16px;padding:14px;z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>"""
 css = CSS.replace("%FS%", "125%" if S.get("large") else "100%")
@@ -183,44 +192,19 @@ ups = sum(1 for h in S.history if h.get("fb") == "up"); downs = sum(1 for h in S
 st.sidebar.caption(f"📊 {len(chunks)} chunks from {len({c['university'] for c in chunks})} universities")
 st.sidebar.caption(f"Feedback this session: 👍 {ups}  👎 {downs}")
 
-tab1, tab2, tab3, tab4 = st.tabs(["💬 Ask Raah", "⚖️ Compare", "📌 Shortlist", "✅ Checklist"])
+tab1, tab2, tab3, tab4 = st.tabs(["🏠 Home", "⚖️ Compare", "📌 Shortlist", "✅ Checklist"])
 
-# ---------- Tab 1: Ask ----------
-def setq(t): S["q"] = t
-def vote(i, kind): S.history[i]["fb"] = kind
+def set_chat(v): S.chat_open = v
 
 with tab1:
-    st.subheader("What would you like to know?")
-    st.text_input("Your question", key="q", placeholder="e.g., What are the eligibility requirements for BS Computer Science?")
-    st.write("Suggested questions:")
-    quick = {"Admission deadlines": "What are the admission deadlines?", "Fee structures": "What are the fee structures?",
-             "Scholarships": "What scholarships are available?", "Eligibility": "What are the eligibility requirements?"}
-    for col, (label, text) in zip(st.columns(4), quick.items()):
-        col.button(label, on_click=setq, args=(text,), key="quick_" + label)
-    if st.button("Ask Raah →", type="primary") and S.q.strip():
-        with st.spinner("Thinking..."):
-            try:
-                a, h, t = run_query(S.q.strip(), multi, f_field, f_city)
-                S.history.append({"q": S.q.strip(), "a": a, "hits": h, "trace": t, "multi": multi, "fb": None})
-            except Exception as e:
-                st.error(f"The AI service failed ({e}). Please try again.")
-    for i in range(len(S.history) - 1, -1, -1):
-        it = S.history[i]
-        with st.chat_message("user"):
-            st.write(it["q"])
-        with st.chat_message("assistant"):
-            st.write(it["a"])
-            if it["hits"]:
-                sources(it["hits"])
-            with st.expander("Agent steps" + (" (multi-agent)" if it["multi"] else " (single-agent)")):
-                for name, info in it["trace"]:
-                    st.write(f"**{name}:** {info}")
-            if it["fb"]:
-                st.caption("Thanks for your feedback.")
-            else:
-                c1, c2, _ = st.columns([1, 1, 6])
-                c1.button("👍 Helpful", key=f"up{i}", on_click=vote, args=(i, "up"))
-                c2.button("👎 Not helpful", key=f"dn{i}", on_click=vote, args=(i, "down"))
+    st.markdown("""<div class="cards">
+<div class="fcard"><div class="ic">💬</div><h4>Ask Raah</h4><p>Source-cited answers, with a safe "not found" instead of guessing.</p></div>
+<div class="fcard"><div class="ic">⚖️</div><h4>Compare</h4><p>Eligibility, fees and deadlines side by side.</p></div>
+<div class="fcard"><div class="ic">📌</div><h4>Shortlist</h4><p>Options matched to your marks, interests and budget.</p></div>
+<div class="fcard"><div class="ic">✅</div><h4>Checklist</h4><p>Application steps you approve, edit or reject.</p></div>
+<div class="fcard"><div class="ic">🤖</div><h4>Multi-agent</h4><p>Planner and Reviewer agents double-check answers.</p></div>
+<div class="fcard"><div class="ic">♿</div><h4>Accessible</h4><p>High contrast, dark mode, large text, keyboard friendly.</p></div></div>""", unsafe_allow_html=True)
+    st.button("💬 Open Raah chat", key="homechat", on_click=set_chat, args=(True,))
 
 # ---------- Tab 2: Compare ----------
 with tab2:
@@ -298,3 +282,43 @@ with tab4:
     if S.cl:
         st.caption(f"{len(approved)} of {len(S.cl)} steps approved. Verify at: {S.get('cl_src', '')}")
         st.download_button("⬇ Download approved checklist", "\n".join(f"[ ] {t}" for t in approved), file_name="raah_checklist.txt")
+
+# ---------- Floating chat (bottom-right) ----------
+def setq(t): S["q"] = t
+def vote(i, kind): S.history[i]["fb"] = kind
+
+st.button("✨", key="fab", on_click=set_chat, args=(not S.chat_open,), help="Open or close Raah chat")
+if S.chat_open:
+    with st.container(key="chatbox"):
+        st.markdown("**🧭 Raah AI** - ask about eligibility, fees, deadlines or scholarships.")
+        st.button("✕ Close chat", key="closechat", on_click=set_chat, args=(False,))
+        st.text_input("Your question", key="q", placeholder="e.g., What are the eligibility requirements for BS Computer Science?")
+        st.write("Suggested questions:")
+        quick = {"Admission deadlines": "What are the admission deadlines?", "Fee structures": "What are the fee structures?",
+                 "Scholarships": "What scholarships are available?", "Eligibility": "What are the eligibility requirements?"}
+        for col, (label, text) in zip(st.columns(4), quick.items()):
+            col.button(label, on_click=setq, args=(text,), key="quick_" + label)
+        if st.button("Ask Raah →", type="primary") and S.q.strip():
+            with st.spinner("Thinking..."):
+                try:
+                    a, h, t = run_query(S.q.strip(), multi, f_field, f_city)
+                    S.history.append({"q": S.q.strip(), "a": a, "hits": h, "trace": t, "multi": multi, "fb": None})
+                except Exception as e:
+                    st.error(f"The AI service failed ({e}). Please try again.")
+        for i in range(len(S.history) - 1, -1, -1):
+            it = S.history[i]
+            with st.chat_message("user"):
+                st.write(it["q"])
+            with st.chat_message("assistant"):
+                st.write(it["a"])
+                if it["hits"]:
+                    sources(it["hits"])
+                with st.expander("Agent steps" + (" (multi-agent)" if it["multi"] else " (single-agent)")):
+                    for name, info in it["trace"]:
+                        st.write(f"**{name}:** {info}")
+                if it["fb"]:
+                    st.caption("Thanks for your feedback.")
+                else:
+                    c1, c2, _ = st.columns([1, 1, 6])
+                    c1.button("👍 Helpful", key=f"up{i}", on_click=vote, args=(i, "up"))
+                    c2.button("👎 Not helpful", key=f"dn{i}", on_click=vote, args=(i, "down"))
