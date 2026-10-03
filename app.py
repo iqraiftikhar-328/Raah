@@ -10,33 +10,55 @@ S = st.session_state
 for k, v in {"history": [], "shortlist": "", "cl": [], "q": ""}.items():
     S.setdefault(k, v)
 
-# ---------- Styling (palette + accessibility) ----------
+# ---------- Styling (palette + accessibility + light/dark) ----------
+dark = bool(S.get("dark"))
+P = ({"BG": "#162526", "TX": "#d5f4e6", "SB": "#0e1c1d", "INBG": "#2d4a4b", "INTX": "#ffffff", "CARD": "#1f3637", "PH": "#a9c9c3"} if dark else
+     {"BG": "#d5f4e6", "TX": "#2d4a4b", "SB": "#2d4a4b", "INBG": "#ffffff", "INTX": "#2d4a4b", "CARD": "#eafaf2", "PH": "#6b8a8b"})
 CSS = """<style>
 html{font-size:%FS%}
-.stApp{background:#d5f4e6;color:#2d4a4b}
-.stApp p,.stApp li,.stApp label,.stApp h2,.stApp h3,.stApp span{color:#2d4a4b}
-[data-testid="stSidebar"]{background:#2d4a4b}
-[data-testid="stSidebar"] label,[data-testid="stSidebar"] p,[data-testid="stSidebar"] h1,[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3,[data-testid="stSidebar"] .stMarkdown,[data-testid="stSidebar"] [data-testid="stCaptionContainer"]{color:#fff!important}
-[data-testid="stSidebar"] div[data-baseweb="select"] *{color:#2d4a4b!important}
-.hero{background:#2d4a4b;border-radius:16px;padding:26px;margin-bottom:14px}
-.hero h1{color:#fff!important;margin:8px 0}
-.hero-body{background:#618685;color:#fff;padding:12px 16px;border-radius:10px}
-.badge{background:#fefbd8;color:#2d4a4b;padding:4px 12px;border-radius:999px;font-weight:700;font-size:.85rem}
-.warn{background:#fefbd8;color:#2d4a4b;border-left:6px solid #2d4a4b;padding:12px 16px;border-radius:8px;margin-bottom:12px}
-.src{background:#fefbd8;color:#2d4a4b;border-left:5px solid #618685;padding:8px 12px;border-radius:6px;margin:6px 0}
-.src a{color:#2d4a4b;font-weight:700;text-decoration:underline}
+.stApp{background:%BG%;color:%TX%}
+.stApp p,.stApp li,.stApp label,.stApp h1,.stApp h2,.stApp h3,.stApp h4,.stApp [data-testid="stCaptionContainer"]{color:%TX%}
+[data-testid="stHeader"]{background:transparent}
+[data-testid="stHeader"] *{color:%TX%!important}
+input,textarea{color:%INTX%!important;-webkit-text-fill-color:%INTX%!important}
+::placeholder{color:%PH%!important;-webkit-text-fill-color:%PH%!important;opacity:1}
+[data-baseweb="input"],[data-baseweb="base-input"],[data-baseweb="textarea"]{background:%INBG%!important}
+.stApp div[data-baseweb="select"]>div{background:%INBG%!important}
+.stApp div[data-baseweb="select"] *{color:%INTX%!important}
+.stTabs [data-baseweb="tab"] p{color:%TX%!important}
+[data-testid="stExpander"] details{background:%CARD%;border-color:%TX%}
+[data-testid="stExpander"] summary *{color:%TX%!important}
+[data-testid="stChatMessage"]{background:%CARD%;border-radius:10px}
+.stApp table,.stApp th,.stApp td{background:%CARD%!important;color:%TX%!important;border-color:%TX%!important}
+span[data-baseweb="tag"]{background:#618685!important}
+span[data-baseweb="tag"] *{color:#fff!important}
 .stButton>button,.stDownloadButton>button{background:#618685;color:#fff;border:0;border-radius:8px;font-weight:600}
 .stButton>button:hover,.stDownloadButton>button:hover{background:#2d4a4b;color:#fff}
-.stButton>button p,.stDownloadButton>button p{color:#fff!important}
-input,textarea{color:#2d4a4b!important}
-:focus-visible{outline:3px solid #2d4a4b!important;outline-offset:2px}
+.stButton>button *,.stDownloadButton>button *{color:#fff!important}
+.hero{background:#2d4a4b;border-radius:16px;padding:26px;margin-bottom:14px}
+.hero .title{color:#ffffff!important;font-size:2.2rem;font-weight:800;line-height:1.2;margin:10px 0}
+.hero .hero-body{background:#618685;color:#ffffff!important;padding:12px 16px;border-radius:10px}
+.hero .badge{background:#fefbd8;color:#2d4a4b!important;padding:4px 12px;border-radius:999px;font-weight:700;font-size:.85rem}
+.warn{background:#fefbd8;color:#2d4a4b!important;border-left:6px solid #2d4a4b;padding:12px 16px;border-radius:8px;margin-bottom:12px}
+.warn *{color:#2d4a4b!important}
+.src{background:#fefbd8;border-left:5px solid #618685;padding:8px 12px;border-radius:6px;margin:6px 0}
+.src,.src *{color:#2d4a4b!important}
+.src a{font-weight:700;text-decoration:underline}
+[data-testid="stSidebar"]{background:%SB%}
+[data-testid="stSidebar"] *{color:#ffffff!important}
+[data-testid="stSidebar"] div[data-baseweb="select"]>div{background:#ffffff!important}
+[data-testid="stSidebar"] div[data-baseweb="select"] *{color:#2d4a4b!important}
+.sbh{font-size:1.15rem;font-weight:700;margin:14px 0 6px}
+:focus-visible{outline:3px solid #618685!important;outline-offset:2px}
 [data-testid="stSidebar"] :focus-visible{outline-color:#fefbd8!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>"""
-st.markdown(CSS.replace("%FS%", "125%" if S.get("large") else "100%"), unsafe_allow_html=True)
+css = CSS.replace("%FS%", "125%" if S.get("large") else "100%")
+for k, v in P.items():
+    css = css.replace("%" + k + "%", v)
+st.markdown(css, unsafe_allow_html=True)
 st.markdown("""<div class="hero" role="banner"><span class="badge">Grounded in official sources</span>
-<h1>Find the path that fits your future.</h1>
+<div class="title" role="heading" aria-level="1">Find the path that fits your future.</div>
 <div class="hero-body">Explore university programs, eligibility, fees and deadlines with AI answers grounded in official sources.</div></div>
 <div class="warn" role="alert"><b>Important:</b> Raah helps you compare options. It can be wrong or outdated - always verify on the official university website. You make the final decision.</div>""", unsafe_allow_html=True)
 
@@ -147,12 +169,13 @@ def run_query(q, multi, field, city):
     return ans, hits, trace
 
 # ---------- Sidebar ----------
-st.sidebar.markdown("### 🧭 Raah\nCareer Navigator")
-st.sidebar.header("Refine your search")
+st.sidebar.markdown('<div class="sbh" style="font-size:1.5rem">🧭 Raah</div><div>Career Navigator</div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div class="sbh">Refine your search</div>', unsafe_allow_html=True)
 f_field = st.sidebar.selectbox("Field of study", ["All"] + sorted({c["field"] for c in chunks}))
 f_city = st.sidebar.selectbox("City", ["All"] + sorted({c["city"] for c in chunks}))
 multi = st.sidebar.toggle("Multi-agent mode (Planner + Reviewer)", help="Slower but double-checks answers against sources.")
-st.sidebar.header("Accessibility")
+st.sidebar.markdown('<div class="sbh">Display &amp; accessibility</div>', unsafe_allow_html=True)
+st.sidebar.toggle("🌙 Dark mode", key="dark")
 st.sidebar.checkbox("Large text", key="large")
 ups = sum(1 for h in S.history if h.get("fb") == "up"); downs = sum(1 for h in S.history if h.get("fb") == "down")
 st.sidebar.caption(f"📊 {len(chunks)} chunks from {len({c['university'] for c in chunks})} universities")
