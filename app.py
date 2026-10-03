@@ -53,9 +53,13 @@ section[data-testid="stSidebar"] div[data-baseweb="select"] svg{fill:#2d4a4b!imp
 .sbh{font-size:1.15rem;font-weight:700;margin:14px 0 6px}
 :focus-visible{outline:3px solid #618685!important;outline-offset:2px}
 [data-testid="stSidebar"] :focus-visible{outline-color:#fefbd8!important}
-[class*="st-key-card_"] button{width:100%;min-height:150px;height:100%;text-align:left;justify-content:flex-start;align-items:flex-start;background:%CARD%;border:1px solid #618685;border-radius:16px;padding:16px;transition:transform .2s}
-.stApp [class*="st-key-card_"] button *{color:%TX%!important;white-space:pre-line;text-align:left}
-[class*="st-key-card_"] button:hover{transform:translateY(-4px);background:%CARD%;border-color:%TX%}
+[class*="st-key-card_"] button{width:100%;min-height:185px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;text-align:left;background:%CARD%;border:1px solid #618685;border-left:6px solid #618685;border-radius:18px;padding:20px 22px;box-shadow:0 3px 10px rgba(0,0,0,.10);transition:transform .2s,box-shadow .2s,border-color .2s}
+[class*="st-key-card_"] button:hover{transform:translateY(-5px);box-shadow:0 12px 26px rgba(0,0,0,.22);border-color:%TX%;background:%CARD%}
+[class*="st-key-card_"] button>div,[class*="st-key-card_"] button [data-testid="stMarkdownContainer"]{width:100%}
+.stApp [class*="st-key-card_"] button *{color:%TX%!important;text-align:left!important}
+.stApp [class*="st-key-card_"] button p{white-space:pre-line;margin:0;width:100%;font-size:.98rem;line-height:1.55;font-weight:400}
+.stApp [class*="st-key-card_"] button p::first-line{font-size:2.4rem;line-height:1.35}
+.stApp [class*="st-key-card_"] button strong{font-size:1.3rem;font-weight:800;line-height:1.7}
 [data-testid="stFormSubmitButton"] button{background:#618685;color:#fff;border:0;border-radius:8px;font-weight:600}
 [data-testid="stFormSubmitButton"] button *{color:#fff!important}
 [data-testid="stForm"]{border:1px solid #618685;background:%CARD%;border-radius:14px}
@@ -207,12 +211,12 @@ def go_multi(): S.multi = True; S.page = P_ASK
 def flip_dark(): S.dark = not S.get("dark", False)
 
 if S.page == P_HOME:
-    cards = [("card_ask", "💬  Ask Raah\n\nSource-cited answers, with a safe \"not found\" instead of guessing.", go, (P_ASK,)),
-             ("card_cmp", "⚖️  Compare\n\nEligibility, fees and deadlines side by side.", go, (P_CMP,)),
-             ("card_sl", "📌  Shortlist\n\nOptions matched to your marks, interests and budget.", go, (P_SL,)),
-             ("card_cl", "✅  Checklist\n\nApplication steps you approve, edit or reject.", go, (P_CL,)),
-             ("card_multi", "🤖  Multi-agent\n\nPlanner and Reviewer agents double-check answers. Tap to turn it on and ask.", go_multi, ()),
-             ("card_dark", "♿  Accessible\n\nHigh contrast, large text, keyboard friendly. Tap to switch dark mode.", flip_dark, ())]
+    cards = [("card_ask", "💬\n**Ask Raah**\nSource-cited answers, with a safe \"not found\" instead of guessing.", go, (P_ASK,)),
+             ("card_cmp", "⚖️\n**Compare**\nEligibility, fees and deadlines side by side.", go, (P_CMP,)),
+             ("card_sl", "📌\n**Shortlist**\nOptions matched to your marks, interests and budget.", go, (P_SL,)),
+             ("card_cl", "✅\n**Checklist**\nApplication steps you approve, edit or reject.", go, (P_CL,)),
+             ("card_multi", "🤖\n**Multi-agent**\nPlanner and Reviewer agents double-check answers. Tap to turn it on and ask.", go_multi, ()),
+             ("card_dark", "♿\n**Accessible**\nHigh contrast, large text, keyboard friendly. Tap to switch dark mode.", flip_dark, ())]
     for row in (cards[:3], cards[3:]):
         for col, (k, label, fn, args) in zip(st.columns(3), row):
             col.button(label, key=k, on_click=fn, args=args, use_container_width=True)
