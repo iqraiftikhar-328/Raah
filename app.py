@@ -7,7 +7,7 @@ from groq import Groq
 
 st.set_page_config(page_title="Raah - Career Navigator", page_icon="🧭", layout="wide")
 S = st.session_state
-for k, v in {"history": [], "shortlist": "", "cl": [], "q": "", "chat_open": False}.items():
+for k, v in {"history": [], "shortlist": "", "cl": [], "q": "", "page": "🏠 Home"}.items():
     S.setdefault(k, v)
 
 # ---------- Styling (palette + accessibility + light/dark) ----------
@@ -53,6 +53,12 @@ section[data-testid="stSidebar"] div[data-baseweb="select"] svg{fill:#2d4a4b!imp
 .sbh{font-size:1.15rem;font-weight:700;margin:14px 0 6px}
 :focus-visible{outline:3px solid #618685!important;outline-offset:2px}
 [data-testid="stSidebar"] :focus-visible{outline-color:#fefbd8!important}
+[class*="st-key-card_"] button{width:100%;min-height:150px;height:100%;text-align:left;justify-content:flex-start;align-items:flex-start;background:%CARD%;border:1px solid #618685;border-radius:16px;padding:16px;transition:transform .2s}
+.stApp [class*="st-key-card_"] button *{color:%TX%!important;white-space:pre-line;text-align:left}
+[class*="st-key-card_"] button:hover{transform:translateY(-4px);background:%CARD%;border-color:%TX%}
+[data-testid="stFormSubmitButton"] button{background:#618685;color:#fff;border:0;border-radius:8px;font-weight:600}
+[data-testid="stFormSubmitButton"] button *{color:#fff!important}
+[data-testid="stForm"]{border:1px solid #618685;background:%CARD%;border-radius:14px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:14px 0}
 .fcard{background:%CARD%;border:1px solid #618685;border-radius:16px;padding:16px;transition:transform .2s}
 .fcard:hover{transform:translateY(-4px)}
@@ -184,7 +190,7 @@ st.sidebar.markdown('<div class="sbh" style="font-size:1.5rem">🧭 Raah</div><d
 st.sidebar.markdown('<div class="sbh">Refine your search</div>', unsafe_allow_html=True)
 f_field = st.sidebar.selectbox("Field of study", ["All"] + sorted({c["field"] for c in chunks}))
 f_city = st.sidebar.selectbox("City", ["All"] + sorted({c["city"] for c in chunks}))
-multi = st.sidebar.toggle("Multi-agent mode (Planner + Reviewer)", help="Slower but double-checks answers against sources.")
+multi = st.sidebar.toggle("Multi-agent mode (Planner + Reviewer)", key="multi", help="Slower but double-checks answers against sources.")
 st.sidebar.markdown('<div class="sbh">Display &amp; accessibility</div>', unsafe_allow_html=True)
 st.sidebar.toggle("🌙 Dark mode", key="dark")
 st.sidebar.checkbox("Large text", key="large")
@@ -192,22 +198,28 @@ ups = sum(1 for h in S.history if h.get("fb") == "up"); downs = sum(1 for h in S
 st.sidebar.caption(f"📊 {len(chunks)} chunks from {len({c['university'] for c in chunks})} universities")
 st.sidebar.caption(f"Feedback this session: 👍 {ups}  👎 {downs}")
 
-tab1, tab2, tab3, tab4 = st.tabs(["🏠 Home", "⚖️ Compare", "📌 Shortlist", "✅ Checklist"])
+P_HOME, P_ASK, P_CMP, P_SL, P_CL = "🏠 Home", "💬 Ask Raah", "⚖️ Compare", "📌 Shortlist", "✅ Checklist"
+PAGES = [P_HOME, P_ASK, P_CMP, P_SL, P_CL]
+st.radio("Navigate", PAGES, key="page", horizontal=True, label_visibility="collapsed")
 
-def set_chat(v): S.chat_open = v
+def go(p): S.page = p
+def go_multi(): S.multi = True; S.page = P_ASK
+def flip_dark(): S.dark = not S.get("dark", False)
 
-with tab1:
-    st.markdown("""<div class="cards">
-<div class="fcard"><div class="ic">💬</div><h4>Ask Raah</h4><p>Source-cited answers, with a safe "not found" instead of guessing.</p></div>
-<div class="fcard"><div class="ic">⚖️</div><h4>Compare</h4><p>Eligibility, fees and deadlines side by side.</p></div>
-<div class="fcard"><div class="ic">📌</div><h4>Shortlist</h4><p>Options matched to your marks, interests and budget.</p></div>
-<div class="fcard"><div class="ic">✅</div><h4>Checklist</h4><p>Application steps you approve, edit or reject.</p></div>
-<div class="fcard"><div class="ic">🤖</div><h4>Multi-agent</h4><p>Planner and Reviewer agents double-check answers.</p></div>
-<div class="fcard"><div class="ic">♿</div><h4>Accessible</h4><p>High contrast, dark mode, large text, keyboard friendly.</p></div></div>""", unsafe_allow_html=True)
-    st.button("💬 Open Raah chat", key="homechat", on_click=set_chat, args=(True,))
+if S.page == P_HOME:
+    cards = [("card_ask", "💬  Ask Raah\n\nSource-cited answers, with a safe \"not found\" instead of guessing.", go, (P_ASK,)),
+             ("card_cmp", "⚖️  Compare\n\nEligibility, fees and deadlines side by side.", go, (P_CMP,)),
+             ("card_sl", "📌  Shortlist\n\nOptions matched to your marks, interests and budget.", go, (P_SL,)),
+             ("card_cl", "✅  Checklist\n\nApplication steps you approve, edit or reject.", go, (P_CL,)),
+             ("card_multi", "🤖  Multi-agent\n\nPlanner and Reviewer agents double-check answers. Tap to turn it on and ask.", go_multi, ()),
+             ("card_dark", "♿  Accessible\n\nHigh contrast, large text, keyboard friendly. Tap to switch dark mode.", flip_dark, ())]
+    for row in (cards[:3], cards[3:]):
+        for col, (k, label, fn, args) in zip(st.columns(3), row):
+            col.button(label, key=k, on_click=fn, args=args, use_container_width=True)
+    st.caption("Tap any card to open it.")
 
 # ---------- Tab 2: Compare ----------
-with tab2:
+if S.page == P_CMP:
     st.subheader("Compare universities side by side")
     unis = sorted({c["university"] for c in chunks})
     pick = st.multiselect("Choose 2-3 universities", unis, max_selections=3)
@@ -229,7 +241,7 @@ with tab2:
         st.info("Select universities to compare.")
 
 # ---------- Tab 3: Shortlist ----------
-with tab3:
+if S.page == P_SL:
     st.subheader("Build my shortlist")
     c1, c2 = st.columns(2)
     interest = c1.text_input("Interests / dream career", placeholder="software, AI, business...")
@@ -256,7 +268,7 @@ with tab3:
         st.download_button("⬇ Download shortlist", S.shortlist + "\n\nAlways verify on official university websites.", file_name="raah_shortlist.txt")
 
 # ---------- Tab 4: Checklist ----------
-with tab4:
+if S.page == P_CL:
     st.subheader("Application checklist (you approve, edit or reject each step)")
     u = st.selectbox("University", sorted({c["university"] for c in chunks}), key="cl_u")
     f = st.selectbox("Field", sorted({c["field"] for c in chunks if c["university"] == u}), key="cl_f")
@@ -283,42 +295,42 @@ with tab4:
         st.caption(f"{len(approved)} of {len(S.cl)} steps approved. Verify at: {S.get('cl_src', '')}")
         st.download_button("⬇ Download approved checklist", "\n".join(f"[ ] {t}" for t in approved), file_name="raah_checklist.txt")
 
-# ---------- Floating chat (bottom-right) ----------
-def setq(t): S["q"] = t
+# ---------- Ask Raah (main area) ----------
 def vote(i, kind): S.history[i]["fb"] = kind
+def queue(t): S["pending"] = t
 
-st.button("✨", key="fab", on_click=set_chat, args=(not S.chat_open,), help="Open or close Raah chat")
-if S.chat_open:
-    with st.container(key="chatbox"):
-        st.markdown("**🧭 Raah AI** - ask about eligibility, fees, deadlines or scholarships.")
-        st.button("✕ Close chat", key="closechat", on_click=set_chat, args=(False,))
-        st.text_input("Your question", key="q", placeholder="e.g., What are the eligibility requirements for BS Computer Science?")
-        st.write("Suggested questions:")
-        quick = {"Admission deadlines": "What are the admission deadlines?", "Fee structures": "What are the fee structures?",
-                 "Scholarships": "What scholarships are available?", "Eligibility": "What are the eligibility requirements?"}
-        for col, (label, text) in zip(st.columns(4), quick.items()):
-            col.button(label, on_click=setq, args=(text,), key="quick_" + label)
-        if st.button("Ask Raah →", type="primary") and S.q.strip():
-            with st.spinner("Thinking..."):
-                try:
-                    a, h, t = run_query(S.q.strip(), multi, f_field, f_city)
-                    S.history.append({"q": S.q.strip(), "a": a, "hits": h, "trace": t, "multi": multi, "fb": None})
-                except Exception as e:
-                    st.error(f"The AI service failed ({e}). Please try again.")
-        for i in range(len(S.history) - 1, -1, -1):
-            it = S.history[i]
-            with st.chat_message("user"):
-                st.write(it["q"])
-            with st.chat_message("assistant"):
-                st.write(it["a"])
-                if it["hits"]:
-                    sources(it["hits"])
-                with st.expander("Agent steps" + (" (multi-agent)" if it["multi"] else " (single-agent)")):
-                    for name, info in it["trace"]:
-                        st.write(f"**{name}:** {info}")
-                if it["fb"]:
-                    st.caption("Thanks for your feedback.")
-                else:
-                    c1, c2, _ = st.columns([1, 1, 6])
-                    c1.button("👍 Helpful", key=f"up{i}", on_click=vote, args=(i, "up"))
-                    c2.button("👎 Not helpful", key=f"dn{i}", on_click=vote, args=(i, "down"))
+if S.page == P_ASK:
+    st.subheader("What would you like to know?")
+    with st.form("askform", clear_on_submit=True):
+        qv = st.text_input("Your question (press Enter to send)", placeholder="e.g., What are the eligibility requirements for BS Computer Science?")
+        sent = st.form_submit_button("Ask Raah →")
+    st.write("Suggested questions:")
+    quick = {"Admission deadlines": "What are the admission deadlines?", "Fee structures": "What are the fee structures?",
+             "Scholarships": "What scholarships are available?", "Eligibility": "What are the eligibility requirements?"}
+    for col, (label, text) in zip(st.columns(4), quick.items()):
+        col.button(label, on_click=queue, args=(text,), key="quick_" + label)
+    query = (qv.strip() if sent else "") or S.pop("pending", "")
+    if query:
+        with st.spinner("Thinking..."):
+            try:
+                a, h, t = run_query(query, multi, f_field, f_city)
+                S.history.append({"q": query, "a": a, "hits": h, "trace": t, "multi": multi, "fb": None})
+            except Exception as e:
+                st.error(f"The AI service failed ({e}). Please try again.")
+    for i in range(len(S.history) - 1, -1, -1):
+        it = S.history[i]
+        with st.chat_message("user"):
+            st.write(it["q"])
+        with st.chat_message("assistant"):
+            st.write(it["a"])
+            if it["hits"]:
+                sources(it["hits"])
+            with st.expander("Agent steps" + (" (multi-agent)" if it["multi"] else " (single-agent)")):
+                for name, info in it["trace"]:
+                    st.write(f"**{name}:** {info}")
+            if it["fb"]:
+                st.caption("Thanks for your feedback.")
+            else:
+                c1, c2, _ = st.columns([1, 1, 6])
+                c1.button("👍 Helpful", key=f"up{i}", on_click=vote, args=(i, "up"))
+                c2.button("👎 Not helpful", key=f"dn{i}", on_click=vote, args=(i, "down"))
