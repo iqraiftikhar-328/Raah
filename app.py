@@ -20,18 +20,20 @@ html{font-size:%FS%}
 .stApp p,.stApp li,.stApp label,.stApp h1,.stApp h2,.stApp h3,.stApp h4,.stApp [data-testid="stCaptionContainer"]{color:%TX%}
 [data-testid="stHeader"]{background:transparent}
 [data-testid="stHeader"] *{color:%TX%!important}
-input,textarea{color:%INTX%!important;-webkit-text-fill-color:%INTX%!important}
+input,textarea{background:%INBG%!important;color:%INTX%!important;-webkit-text-fill-color:%INTX%!important}
 ::placeholder{color:%PH%!important;-webkit-text-fill-color:%PH%!important;opacity:1}
 [data-baseweb="input"],[data-baseweb="base-input"],[data-baseweb="textarea"]{background:%INBG%!important}
-.stApp div[data-baseweb="select"]>div{background:%INBG%!important}
-.stApp div[data-baseweb="select"] *{color:%INTX%!important}
+.stApp div[data-baseweb="select"] *{background:%INBG%!important;color:%INTX%!important}
+.stApp div[data-baseweb="select"] svg{fill:%INTX%!important}
 .stTabs [data-baseweb="tab"] p{color:%TX%!important}
 [data-testid="stExpander"] details{background:%CARD%;border-color:%TX%}
 [data-testid="stExpander"] summary *{color:%TX%!important}
 [data-testid="stChatMessage"]{background:%CARD%;border-radius:10px}
 .stApp table,.stApp th,.stApp td{background:%CARD%!important;color:%TX%!important;border-color:%TX%!important}
-span[data-baseweb="tag"]{background:#618685!important}
-span[data-baseweb="tag"] *{color:#fff!important}
+.stApp div[data-baseweb="select"] span[data-baseweb="tag"],.stApp div[data-baseweb="select"] span[data-baseweb="tag"] *{background:#618685!important;color:#ffffff!important}
+[data-baseweb="popover"] ul,[data-baseweb="popover"] li{background:#ffffff!important}
+[data-baseweb="popover"] *{color:#2d4a4b!important}
+[data-baseweb="popover"] li:hover,[data-baseweb="popover"] li[aria-selected="true"]{background:#d5f4e6!important}
 .stButton>button,.stDownloadButton>button{background:#618685;color:#fff;border:0;border-radius:8px;font-weight:600}
 .stButton>button:hover,.stDownloadButton>button:hover{background:#2d4a4b;color:#fff}
 .stButton>button *,.stDownloadButton>button *{color:#fff!important}
@@ -46,8 +48,8 @@ span[data-baseweb="tag"] *{color:#fff!important}
 .src a{font-weight:700;text-decoration:underline}
 [data-testid="stSidebar"]{background:%SB%}
 [data-testid="stSidebar"] *{color:#ffffff!important}
-[data-testid="stSidebar"] div[data-baseweb="select"]>div{background:#ffffff!important}
-[data-testid="stSidebar"] div[data-baseweb="select"] *{color:#2d4a4b!important}
+section[data-testid="stSidebar"] div[data-baseweb="select"] *{background:#ffffff!important;color:#2d4a4b!important}
+section[data-testid="stSidebar"] div[data-baseweb="select"] svg{fill:#2d4a4b!important}
 .sbh{font-size:1.15rem;font-weight:700;margin:14px 0 6px}
 :focus-visible{outline:3px solid #618685!important;outline-offset:2px}
 [data-testid="stSidebar"] :focus-visible{outline-color:#fefbd8!important}
@@ -103,7 +105,7 @@ def load_chunks():
     return chunks
 
 @st.cache_resource(show_spinner="Building knowledge base (one time)...")
-def build_index():
+def build_index(version="v3"):
     chunks = load_chunks()
     if not chunks:
         return None, None, []
@@ -227,7 +229,7 @@ with tab2:
     pick = st.multiselect("Choose 2-3 universities", unis, max_selections=3)
     def sec(u, f, key):
         m = [c for c in chunks if c["university"] == u and c["field"] == f and key in c["section"].lower()]
-        return " ".join(c["content"] for c in m) or "Not in knowledge base"
+        return " ".join(c.get("content") or c["text"].split(": ", 1)[-1] for c in m) or "Not in knowledge base"
     rows = []
     for u in pick:
         for f in sorted({c["field"] for c in chunks if c["university"] == u}):
