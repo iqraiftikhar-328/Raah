@@ -1,164 +1,66 @@
 import os, re, glob
+import pandas as pd
 import streamlit as st
 import faiss
 from sentence_transformers import SentenceTransformer
 from groq import Groq
 
-# -----------------------------------------------------------------------------
-# 1. PAGE CONFIGURATION
-# -----------------------------------------------------------------------------
-st.set_page_config(page_title="Raah", page_icon="🧭", layout="wide")
+st.set_page_config(page_title="Raah - Career Navigator", page_icon="🧭", layout="wide")
+S = st.session_state
+for k, v in {"history": [], "shortlist": "", "cl": [], "q": ""}.items():
+    S.setdefault(k, v)
 
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+# ---------- Styling (palette + accessibility) ----------
+CSS = """<style>
+html{font-size:%FS%}
+.stApp{background:#d5f4e6;color:#2d4a4b}
+.stApp p,.stApp li,.stApp label,.stApp h2,.stApp h3,.stApp span{color:#2d4a4b}
+[data-testid="stSidebar"]{background:#2d4a4b}
+[data-testid="stSidebar"] label,[data-testid="stSidebar"] p,[data-testid="stSidebar"] h1,[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,[data-testid="stSidebar"] .stMarkdown,[data-testid="stSidebar"] [data-testid="stCaptionContainer"]{color:#fff!important}
+[data-testid="stSidebar"] div[data-baseweb="select"] *{color:#2d4a4b!important}
+.hero{background:#2d4a4b;border-radius:16px;padding:26px;margin-bottom:14px}
+.hero h1{color:#fff!important;margin:8px 0}
+.hero-body{background:#618685;color:#fff;padding:12px 16px;border-radius:10px}
+.badge{background:#fefbd8;color:#2d4a4b;padding:4px 12px;border-radius:999px;font-weight:700;font-size:.85rem}
+.warn{background:#fefbd8;color:#2d4a4b;border-left:6px solid #2d4a4b;padding:12px 16px;border-radius:8px;margin-bottom:12px}
+.src{background:#fefbd8;color:#2d4a4b;border-left:5px solid #618685;padding:8px 12px;border-radius:6px;margin:6px 0}
+.src a{color:#2d4a4b;font-weight:700;text-decoration:underline}
+.stButton>button,.stDownloadButton>button{background:#618685;color:#fff;border:0;border-radius:8px;font-weight:600}
+.stButton>button:hover,.stDownloadButton>button:hover{background:#2d4a4b;color:#fff}
+.stButton>button p,.stDownloadButton>button p{color:#fff!important}
+input,textarea{color:#2d4a4b!important}
+:focus-visible{outline:3px solid #2d4a4b!important;outline-offset:2px}
+[data-testid="stSidebar"] :focus-visible{outline-color:#fefbd8!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>"""
+st.markdown(CSS.replace("%FS%", "125%" if S.get("large") else "100%"), unsafe_allow_html=True)
+st.markdown("""<div class="hero" role="banner"><span class="badge">Grounded in official sources</span>
+<h1>Find the path that fits your future.</h1>
+<div class="hero-body">Explore university programs, eligibility, fees and deadlines with AI answers grounded in official sources.</div></div>
+<div class="warn" role="alert"><b>Important:</b> Raah helps you compare options. It can be wrong or outdated - always verify on the official university website. You make the final decision.</div>""", unsafe_allow_html=True)
 
-    /* --- HERO BANNER (white on dark gradient = AAA) --- */
-    .hero {
-        background: linear-gradient(135deg, #2d4a4b 0%, #618685 100%);
-        padding: 3rem 2rem;
-        border-radius: 16px;
-        text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(45, 74, 75, 0.3);
-    }
-    .hero-badge {
-        background-color: #fefbd8;
-        color: #2d4a4b !important; /* 12:1 contrast */
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        display: inline-block;
-        margin-bottom: 1rem;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    }
-    .hero h1 {
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin: 0 0 1rem 0;
-        color: #ffffff !important; /* 8.5:1 on teal */
-        line-height: 1.2;
-    }
-    .hero p {
-        font-size: 1.15rem;
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.6;
-        color: #ffffff !important; /* Higher contrast than cream */
-    }
-
-    /* --- WARNING BANNER --- */
-    .warn {
-        background: #fefbd8;
-        border-left: 6px solid #2d4a4b;
-        color: #2d4a4b !important; /* 12:1 contrast */
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(45, 74, 75, 0.15);
-    }
-    .warn * { color: #2d4a4b !important; }
-    .warn b { font-weight: 700; }
-
-    /* --- SIDEBAR (white on deep teal = 8.5:1) --- */
-    [data-testid="stSidebar"] {
-        background-color: #2d4a4b !important;
-    }
-    [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] span,
-    [data-testid="stSidebar"] .stCaption {
-        color: #ffffff !important; /* Maximum contrast */
-    }
-    /* Sidebar dropdowns - Cream background, dark text */
-    [data-testid="stSidebar"] div[data-baseweb="select"] > div {
-        background-color: #ffffff !important;
-        color: #2d4a4b !important;
-        border: 2px solid #80ced6 !important;
-    }
-    [data-testid="stSidebar"] div[data-baseweb="select"] * {
-        color: #2d4a4b !important;
-    }
-
-    /* --- LOGO AREA --- */
-    .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
-    .logo-icon {
-        background-color: #ffffff;
-        color: #2d4a4b;
-        width: 45px; height: 45px; border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 24px;
-    }
-    .logo-text h2 { margin: 0; font-size: 1.4rem; color: #ffffff !important; }
-    .logo-text p { margin: 0; font-size: 0.8rem; color: #d5f4e6 !important; }
-
-    /* --- SOURCE CARDS (dark text on cream = AAA) --- */
-    .src {
-        border-left: 5px solid #2d4a4b;
-        background: #fefbd8;
-        padding: 14px 18px;
-        border-radius: 8px;
-        margin: 10px 0;
-        font-size: 0.9rem;
-        border: 1px solid #618685;
-        color: #2d4a4b;
-    }
-    .src b { color: #2d4a4b !important; font-weight: 700; }
-    /* Link = dark teal on cream (8.5:1) ✅ AAA */
-    .src a {
-        color: #2d4a4b !important;
-        text-decoration: underline;
-        font-weight: 700;
-        text-underline-offset: 3px;
-    }
-    .src a:hover {
-        color: #618685 !important;
-    }
-    .src a:focus {
-        outline: 2px solid #2d4a4b;
-        outline-offset: 2px;
-        border-radius: 2px;
-    }
-
-    /* --- FOCUS STATES for accessibility --- */
-    button:focus, input:focus, textarea:focus, select:focus, a:focus {
-        outline: 3px solid #2d4a4b !important;
-        outline-offset: 2px !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# -----------------------------------------------------------------------------
-# 2. BACKEND LOGIC
-# -----------------------------------------------------------------------------
+# ---------- Config ----------
 def secret(name, default=None):
     try:
         return st.secrets[name]
     except Exception:
         return os.getenv(name, default)
 
-MODEL = secret("GROQ_MODEL", "openai/gpt-oss-120b")
+MODEL = secret("GROQ_MODEL", "llama-3.3-70b-versatile")
 MIN_SCORE = 0.25
 NOT_FOUND = "I could not find this in the available knowledge base. Please check the official university website."
 SYSTEM = ("You are Raah, a career and admissions assistant. Answer ONLY using the provided context. "
           "If the answer is not in the context, say it was not found in the available knowledge base. "
           "Never invent admission rules, fees, dates, salaries or job prospects. Mention uncertainty. Be concise and clear.")
 
+# ---------- Data + index ----------
 def load_chunks():
     chunks = []
     for path in sorted(glob.glob("data/*.txt")):
         if "sample_template" in path:
             continue
-        text = open(path, encoding="utf-8").read()
-        head, _, body = text.partition("\n\n")
+        head, _, body = open(path, encoding="utf-8").read().partition("\n\n")
         meta = {}
         for line in head.splitlines():
             if ":" in line:
@@ -173,7 +75,7 @@ def load_chunks():
             if len(content) < 20:
                 continue
             chunks.append({"text": f"{meta.get('university','')} - {meta.get('field','')} - {section}: {content}",
-                           "university": meta.get("university", "?"), "city": meta.get("city", "?"),
+                           "content": content, "university": meta.get("university", "?"), "city": meta.get("city", "?"),
                            "field": meta.get("field", "?"), "year": meta.get("year", "?"),
                            "source": meta.get("source", ""), "section": section})
     return chunks
@@ -190,10 +92,11 @@ def build_index():
     return model, index, chunks
 
 model, index, chunks = build_index()
+if not chunks:
+    st.error("No documents found. Add .txt files to the data/ folder.")
+    st.stop()
 
 def retrieve(query, field="All", city="All", k=3):
-    if not model or not index or not chunks:
-        return []
     qv = model.encode([query], normalize_embeddings=True).astype("float32")
     scores, ids = index.search(qv, len(chunks))
     hits = []
@@ -204,147 +107,169 @@ def retrieve(query, field="All", city="All", k=3):
         hits.append({**c, "score": float(s)})
     return hits[:k]
 
-def llm(user_msg):
-    client = Groq(api_key=secret("GROQ_API_KEY"))
-    r = client.chat.completions.create(model=MODEL, temperature=0.1,
-        messages=[{"role": "system", "content": SYSTEM}, {"role": "user", "content": user_msg}])
-    return r.choices[0].message.content
+def llm(msg, system=SYSTEM):
+    r = Groq(api_key=secret("GROQ_API_KEY")).chat.completions.create(
+        model=MODEL, temperature=0.1, messages=[{"role": "system", "content": system}, {"role": "user", "content": msg}])
+    return r.choices[0].message.content.strip()
 
-def show_sources(hits):
-    with st.expander("📚 View Sources Used"):
+def ctx_of(hits):
+    return "\n\n".join(f"[{h['university']} | {h['section']} | {h['year']}] {h['text']}" for h in hits)
+
+def sources(hits):
+    with st.expander("Sources used"):
         for h in hits:
-            st.markdown(f'<div class="src"><b>{h["university"]}</b> — {h["section"]} ({h["field"]}, {h["city"]}, {h["year"]})<br>'
-                        f'<a href="{h["source"]}" target="_blank" rel="noopener noreferrer">{h["source"]}</a> &nbsp;|&nbsp; Match Score: {h["score"]:.2f}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="src"><b>{h["university"]}</b> - {h["section"]} ({h["field"]}, {h["city"]}, {h["year"]})<br>'
+                        f'<a href="{h["source"]}" target="_blank">Open official source</a> - match score {h["score"]:.2f}</div>',
+                        unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# 3. ERROR HANDLING
-# -----------------------------------------------------------------------------
-if not chunks:
-    st.error("No documents found. Add .txt files to the data/ folder (see data/sample_template.txt).")
-    st.stop()
+def run_query(q, multi, field, city):
+    trace, sq = [], q
+    if multi:
+        try:
+            sq = llm("Rewrite this student question as a short search query (max 15 words). Output only the query.\n" + q,
+                     "You are a query planner.")
+            trace.append(("Planner", f"Search query: {sq}"))
+        except Exception:
+            sq = q
+    hits = retrieve(sq, field, city) or (retrieve(q, field, city) if sq != q else [])
+    trace.append(("Retriever", f"{len(hits)} relevant chunks found"))
+    if not hits:
+        return NOT_FOUND, [], trace
+    ans = llm(f"Context:\n{ctx_of(hits)}\n\nQuestion:\n{q}")
+    trace.append(("Answerer", "Draft answer written from sources"))
+    if multi:
+        try:
+            ans = llm(f"Context:\n{ctx_of(hits)}\n\nDraft answer:\n{ans}\n\nCheck every claim against the context. Rewrite the answer "
+                      "keeping ONLY supported claims. If something is unsupported, remove it and say it was not found. Output only the final answer.")
+            trace.append(("Reviewer", "Claims checked against sources"))
+        except Exception:
+            trace.append(("Reviewer", "Skipped (service error)"))
+    return ans, hits, trace
 
-# -----------------------------------------------------------------------------
-# 4. SIDEBAR
-# -----------------------------------------------------------------------------
-fields = ["All"] + sorted({c["field"] for c in chunks})
-cities = ["All"] + sorted({c["city"] for c in chunks})
+# ---------- Sidebar ----------
+st.sidebar.markdown("### 🧭 Raah\nCareer Navigator")
+st.sidebar.header("Refine your search")
+f_field = st.sidebar.selectbox("Field of study", ["All"] + sorted({c["field"] for c in chunks}))
+f_city = st.sidebar.selectbox("City", ["All"] + sorted({c["city"] for c in chunks}))
+multi = st.sidebar.toggle("Multi-agent mode (Planner + Reviewer)", help="Slower but double-checks answers against sources.")
+st.sidebar.header("Accessibility")
+st.sidebar.checkbox("Large text", key="large")
+ups = sum(1 for h in S.history if h.get("fb") == "up"); downs = sum(1 for h in S.history if h.get("fb") == "down")
+st.sidebar.caption(f"📊 {len(chunks)} chunks from {len({c['university'] for c in chunks})} universities")
+st.sidebar.caption(f"Feedback this session: 👍 {ups}  👎 {downs}")
 
-with st.sidebar:
-    st.markdown("""
-    <div class="logo-area">
-        <div class="logo-icon">🧭</div>
-        <div class="logo-text">
-            <h2>Raah</h2>
-            <p>Career Navigator</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("### Refine your search")
-    f_field = st.selectbox("Field of Study", fields)
-    f_city = st.selectbox("City", cities)
-    
-    st.markdown("---")
-    st.caption(f"📊 **{len(chunks)}** chunks from **{len({c['university'] for c in chunks})}** universities")
+tab1, tab2, tab3, tab4 = st.tabs(["💬 Ask Raah", "⚖️ Compare", "📌 Shortlist", "✅ Checklist"])
 
-# -----------------------------------------------------------------------------
-# 5. MAIN CONTENT
-# -----------------------------------------------------------------------------
-st.markdown("""
-<div class="hero">
-    <div class="hero-badge">✨ AI-Powered Admissions Guide</div>
-    <h1>Find the path that fits your future.</h1>
-    <p>Explore university programs, eligibility, fees and deadlines with AI answers grounded in official sources.</p>
-</div>
-""", unsafe_allow_html=True)
+# ---------- Tab 1: Ask ----------
+def setq(t): S["q"] = t
+def vote(i, kind): S.history[i]["fb"] = kind
 
-st.markdown("""
-<div class="warn">
-    <b>⚠️ Important:</b> Raah helps you compare options. It can be wrong or outdated — always verify on the official university website. You make the final decision.
-</div>
-""", unsafe_allow_html=True)
-
-tab1, tab2 = st.tabs(["💬 Ask Raah", "📌 Build My Shortlist"])
-
-# --- TAB 1: ASK RAAH ---
 with tab1:
-    st.markdown("### What would you like to know?")
-    st.markdown("Ask about eligibility, fees, deadlines or a university program.")
-    
-    q = st.text_input("Ask Raah", placeholder="e.g., What are the eligibility requirements for BS Computer Science?", label_visibility="collapsed")
-    
-    st.markdown("**Suggested questions:**")
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        if st.button("📅 Admission Deadlines"):
-            st.session_state.q_input = "What are the upcoming admission deadlines?"
-    with c2:
-        if st.button("💰 Fee Structures"):
-            st.session_state.q_input = "What is the fee structure for engineering programs?"
-    with c3:
-        if st.button("🎓 Scholarships"):
-            st.session_state.q_input = "Are there any merit-based scholarships available?"
-    with c4:
-        if st.button("📋 Eligibility"):
-            st.session_state.q_input = "What is the eligibility criteria for Medical colleges?"
-
-    _, col_btn = st.columns([3, 1])
-    with col_btn:
-        ask_clicked = st.button("Ask Raah ➔", type="primary", use_container_width=True)
-
-    query_to_run = st.session_state.get('q_input', q)
-    
-    if ask_clicked or (st.session_state.get('q_input') and not q):
-        if query_to_run:
-            hits = retrieve(query_to_run, f_field, f_city)
-            if not hits:
-                st.info(NOT_FOUND)
+    st.subheader("What would you like to know?")
+    st.text_input("Your question", key="q", placeholder="e.g., What are the eligibility requirements for BS Computer Science?")
+    st.write("Suggested questions:")
+    quick = {"Admission deadlines": "What are the admission deadlines?", "Fee structures": "What are the fee structures?",
+             "Scholarships": "What scholarships are available?", "Eligibility": "What are the eligibility requirements?"}
+    for col, (label, text) in zip(st.columns(4), quick.items()):
+        col.button(label, on_click=setq, args=(text,), key="quick_" + label)
+    if st.button("Ask Raah →", type="primary") and S.q.strip():
+        with st.spinner("Thinking..."):
+            try:
+                a, h, t = run_query(S.q.strip(), multi, f_field, f_city)
+                S.history.append({"q": S.q.strip(), "a": a, "hits": h, "trace": t, "multi": multi, "fb": None})
+            except Exception as e:
+                st.error(f"The AI service failed ({e}). Please try again.")
+    for i in range(len(S.history) - 1, -1, -1):
+        it = S.history[i]
+        with st.chat_message("user"):
+            st.write(it["q"])
+        with st.chat_message("assistant"):
+            st.write(it["a"])
+            if it["hits"]:
+                sources(it["hits"])
+            with st.expander("Agent steps" + (" (multi-agent)" if it["multi"] else " (single-agent)")):
+                for name, info in it["trace"]:
+                    st.write(f"**{name}:** {info}")
+            if it["fb"]:
+                st.caption("Thanks for your feedback.")
             else:
-                ctx = "\n\n".join(f"[{h['university']} | {h['section']} | {h['year']}] {h['text']}" for h in hits)
-                with st.spinner("Thinking..."):
-                    try:
-                        st.markdown("### Answer")
-                        st.write(llm(f"Context:\n{ctx}\n\nQuestion:\n{query_to_run}"))
-                        show_sources(hits)
-                    except Exception as e:
-                        st.error(f"The AI service failed ({e}). Please try again.")
-            if 'q_input' in st.session_state:
-                del st.session_state.q_input
+                c1, c2, _ = st.columns([1, 1, 6])
+                c1.button("👍 Helpful", key=f"up{i}", on_click=vote, args=(i, "up"))
+                c2.button("👎 Not helpful", key=f"dn{i}", on_click=vote, args=(i, "down"))
 
-# --- TAB 2: BUILD MY SHORTLIST ---
+# ---------- Tab 2: Compare ----------
 with tab2:
-    st.markdown("### Build Your Shortlist")
-    st.markdown("Tell us about your profile and we'll suggest options from the knowledge base.")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        interest = st.text_input("Interests / Dream Career", placeholder="e.g., software, AI, business...")
-        marks = st.number_input("FSc/A-level Marks (%)", 0, 100, 70)
-    with col2:
-        budget = st.text_input("Yearly Budget (PKR)", placeholder="e.g., 300000")
-        pref_city = st.text_input("Preferred City", placeholder="e.g., Islamabad")
-
-    suggest_clicked = st.button("✨ Suggest Options", type="primary")
-
-    if suggest_clicked:
-        if not interest:
-            st.warning("Please enter your interests to get suggestions.")
-        else:
-            hits = retrieve(f"{interest} program eligibility fees {pref_city}", f_field, f_city, k=5)
-            if not hits:
-                st.info(NOT_FOUND)
-            else:
-                ctx = "\n\n".join(f"[{h['university']} | {h['section']} | {h['year']}] {h['text']}" for h in hits)
-                profile = f"Interests: {interest}; marks: {marks}%; budget: {budget}; city: {pref_city}"
-                msg = (f"Context:\n{ctx}\n\nStudent profile: {profile}\n\nSuggest up to 3 options using ONLY the context. "
-                       "For each: name, why it fits, fees/deadline if stated, and what is uncertain or missing. "
-                       "Say if the student may not meet the eligibility. Remind them to verify officially.")
-                with st.spinner("Comparing options..."):
-                    try:
-                        st.markdown("### Suggested Options")
-                        st.write(llm(msg))
-                        show_sources(hits)
-                    except Exception as e:
-                        st.error(f"The AI service failed ({e}). Please try again.")
+    st.subheader("Compare universities side by side")
+    unis = sorted({c["university"] for c in chunks})
+    pick = st.multiselect("Choose 2-3 universities", unis, max_selections=3)
+    def sec(u, f, key):
+        m = [c for c in chunks if c["university"] == u and c["field"] == f and key in c["section"].lower()]
+        return " ".join(c["content"] for c in m) or "Not in knowledge base"
+    rows = []
+    for u in pick:
+        for f in sorted({c["field"] for c in chunks if c["university"] == u}):
+            if f_field != "All" and f != f_field:
+                continue
+            src = next(c["source"] for c in chunks if c["university"] == u and c["field"] == f)
+            rows.append({"University": u, "Field": f, "Eligibility": sec(u, f, "eligib"), "Fees": sec(u, f, "fee"),
+                         "Deadlines": sec(u, f, "deadline"), "Source": src})
+    if rows:
+        st.table(pd.DataFrame(rows).set_index("University"))
+        st.caption("Taken directly from your indexed documents - verify on the official sites.")
     else:
-        st.info("💡 Fill in your details above and click **Suggest Options** to get started.")
+        st.info("Select universities to compare.")
+
+# ---------- Tab 3: Shortlist ----------
+with tab3:
+    st.subheader("Build my shortlist")
+    c1, c2 = st.columns(2)
+    interest = c1.text_input("Interests / dream career", placeholder="software, AI, business...")
+    marks = c1.number_input("FSc / A-level marks (%)", 0, 100, 70)
+    budget = c2.text_input("Yearly budget (PKR)", placeholder="e.g. 300000")
+    pref_city = c2.text_input("Preferred city", placeholder="Islamabad")
+    if st.button("Suggest options") and interest:
+        hits = retrieve(f"{interest} program eligibility fees {pref_city}", f_field, f_city, k=5)
+        if not hits:
+            S.shortlist = NOT_FOUND
+        else:
+            with st.spinner("Comparing options..."):
+                try:
+                    S.shortlist = llm(f"Context:\n{ctx_of(hits)}\n\nStudent profile: interests {interest}; marks {marks}%; budget {budget}; city {pref_city}\n\n"
+                                      "Suggest up to 3 options using ONLY the context. For each: name, why it fits, fees/deadline if stated, what is uncertain. "
+                                      "Say if the student may not meet eligibility. Remind them to verify officially.")
+                    S.shortlist_hits = hits
+                except Exception as e:
+                    st.error(f"The AI service failed ({e}).")
+    if S.shortlist:
+        st.write(S.shortlist)
+        if S.get("shortlist_hits") and S.shortlist != NOT_FOUND:
+            sources(S.shortlist_hits)
+        st.download_button("⬇ Download shortlist", S.shortlist + "\n\nAlways verify on official university websites.", file_name="raah_shortlist.txt")
+
+# ---------- Tab 4: Checklist ----------
+with tab4:
+    st.subheader("Application checklist (you approve, edit or reject each step)")
+    u = st.selectbox("University", sorted({c["university"] for c in chunks}), key="cl_u")
+    f = st.selectbox("Field", sorted({c["field"] for c in chunks if c["university"] == u}), key="cl_f")
+    if st.button("Generate checklist"):
+        part = [c for c in chunks if c["university"] == u and c["field"] == f]
+        with st.spinner("Preparing..."):
+            try:
+                out = llm(f"Context:\n{ctx_of([{**c, 'score': 0} for c in part])}\n\nCreate a checklist of 5-10 application steps using ONLY the context. "
+                          "One step per line starting with '- '. Include deadlines, documents and fees only if stated. Do not invent anything.")
+                S.cl = [l.lstrip("-• ").strip() for l in out.splitlines() if l.strip().startswith(("-", "•"))]
+                S.cl_src = part[0]["source"]
+                for k in [k for k in S if str(k).startswith(("cl_t", "cl_s"))]:
+                    del S[k]
+            except Exception as e:
+                st.error(f"The AI service failed ({e}).")
+    approved = []
+    for i, item in enumerate(S.cl):
+        a, b = st.columns([4, 2])
+        txt = a.text_input(f"Step {i+1}", value=item, key=f"cl_t{i}")
+        stat = b.radio(f"Decision for step {i+1}", ["Approve", "Reject"], horizontal=True, key=f"cl_s{i}")
+        if stat == "Approve":
+            approved.append(txt)
+    if S.cl:
+        st.caption(f"{len(approved)} of {len(S.cl)} steps approved. Verify at: {S.get('cl_src', '')}")
+        st.download_button("⬇ Download approved checklist", "\n".join(f"[ ] {t}" for t in approved), file_name="raah_checklist.txt")
